@@ -50,7 +50,6 @@ function App() {
         ) : (
           <>
             <HeroSection />
-            <InfoRow />
             <Footer />
           </>
         )}
@@ -152,33 +151,6 @@ function HeroSection() {
           Server
           <br />
           <a href="download.html">Get the server</a>
-        </p>
-      </div>
-    </section>
-  );
-}
-
-function InfoRow() {
-  return (
-    <section className="info-row">
-      <div className="info-box">
-        <h2>Join Us on Facebook</h2>
-        <p>
-          Join the Minecraft community on Facebook by liking our page{" "}
-          <a href="https://facebook.com/minecraft">facebook.com/minecraft</a>.
-        </p>
-      </div>
-
-      <div className="info-box">
-        <h2>Minecraft Update News</h2>
-        <p>Follow the latest updates and changes to Minecraft.</p>
-      </div>
-
-      <div className="info-box">
-        <h2>Twitter / @jeb_</h2>
-        <p>
-          Jeb is on the Twitter. You should follow him for all the fine inside scoops of Minecraft
-          development.
         </p>
       </div>
     </section>
