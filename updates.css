@@ -1,0 +1,191 @@
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Minecraftia';
+    src: url('assets/minecraftia.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    background: #1a1a1a url('assets/bg.png') repeat;
+    /* Tiled background like the original mcupdate page */
+    font-family: sans-serif;
+    color: #e0d0d0;
+    line-height: 1.5;
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    /* Smoother rendering for standard sans-serif fonts */
+}
+
+code {
+    font-family: monospace;
+    font-size: 13px;
+}
+
+a {
+    color: #aaaaff;
+    /* Link color similar to original Tumblr page */
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #ffffff;
+}
+
+/* Layout */
+.main-container {
+    /* Stretch across the available width so the sidebar hugs the right edge
+       of the launcher window regardless of how wide it is. */
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 12px 24px 16px;
+}
+
+/* Header */
+header {
+    margin-bottom: 40px;
+}
+
+.tumblr-bar {
+    display: none;
+}
+
+.tumblr-link {
+    color: #aaaaaa;
+    text-decoration: none;
+}
+
+.site-title {
+    /* Slightly larger than body text, but smaller than the original Tumblr h1
+       so it doesn't dominate inside the launcher client. */
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0 0 18px 0;
+}
+
+.site-title a {
+    color: #e0d0d0;
+    text-decoration: none;
+}
+
+.layout-table {
+    width: 100%;
+}
+
+/* Main Posts Column */
+.posts-column {
+    width: 100%;
+}
+
+.post {
+    /* Vertical spacing between posts is controlled by .post-meta now. */
+    margin-bottom: 0;
+}
+
+.post-title {
+    font-size: 16px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.post-title a {
+    color: #aaaaff;
+    text-decoration: underline;
+}
+
+.post-title a:hover {
+    text-decoration: underline;
+}
+
+.post-body {
+    margin-bottom: 8px;
+}
+
+.post-body p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.post-meta {
+    font-size: 11px;
+    color: #aaaaaa;
+    /* Keep the date visually attached to the article body, but pushed away
+       from the next article title. */
+    margin-top: 2px;
+    margin-bottom: 24px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 200px;
+    padding-left: 20px;
+    padding-top: 0;
+}
+
+.sidebar-section {
+    margin: 0 0 30px 0;
+}
+
+.sidebar-section h3 {
+    /* Make sidebar headings only a bit larger than body text so they match
+       the proportions of the original launcher more closely. */
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #ffffff;
+    white-space: nowrap; /* keep 'Official links' and 'Community links' on one line */
+}
+
+.sidebar-section.first {
+    /* Nudge first block up so its heading lines up with 'Minecraft News' */
+    margin-top: -8px;
+}
+
+/* Sidebar links: ensure each link sits on its own line even without lists,
+   for both browser and embedded client rendering. */
+.sidebar-links a {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 20px;
+}
+
+.older-link {
+    font-size: 14px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* Global list reset: remove bullets and default browser indentation for all ULs
+   (both in the main posts and in the sidebar) so content lines up with the rest
+   of the text in both the website and the embedded client. */
+ul {
+    list-style: none;
+    margin: 0 0 10px 0;
+    padding: 0;
+}
+
+li {
+    margin: 0 0 4px 0;
+    padding: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .layout-table,
+    .layout-table tr,
+    .layout-table td {
+        display: block;
+        width: 100% !important;
+    }
+}

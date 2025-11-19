@@ -1,0 +1,344 @@
+/* Basic reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #222222;
+  background-image: url("assets/bg_main.png"); /* dirt-style tile, like the original */
+  color: #e0d0d0;
+  font-family: sans-serif;
+}
+
+a {
+  color: #68a0ff;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #ffffff;
+}
+
+#page {
+  width: 960px;
+  margin: 0 auto;
+  padding: 0 0 40px;
+}
+
+/* Top navigation bar (full-width dirt header strip) */
+.top-bar {
+  /* No padding here so the header content lines up exactly with #page below */
+  margin-bottom: 0;
+  background: url("assets/bg_top.png") repeat-x;
+}
+
+.top-inner {
+  width: 960px;
+  margin: 0 auto;
+  /* Tighter vertical padding so the logo and nav sit higher inside the dirt strip */
+  padding: 4px 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  display: block;
+  /* Keep the logo small enough to fit fully inside the dirt header */
+  max-height: 48px;
+  height: 48px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 32px; /* bring nav close to the logo while leaving a small gap */
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #e0d0d0;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-links {
+  font-size: 13px;
+}
+
+.auth-links a {
+  color: #e0d0d0;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+/* Hero row (video + purchase/animals column) */
+.hero-row {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.hero-left {
+  flex: 2;
+  font-size: 13px;
+}
+
+.hero-video {
+  background-color: #000000;
+  border: 1px solid #000000;
+  margin-bottom: 10px;
+}
+
+.hero-video iframe {
+  display: block;
+  width: 100%;
+  height: 360px;
+}
+
+.hero-copy {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.hero-stats {
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.hero-right {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+}
+
+.hero-animals {
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #55aa55;
+  border: 1px solid #1f5f1f;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Download button image that replaces the original orange "Buy Now!" button */
+.download-btn {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.download-btn img {
+  display: block;
+}
+
+.btn {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #55aa55;
+  border: 1px solid #1f5f1f;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: #444444;
+  border-color: #222222;
+}
+
+.btn:hover {
+  background-color: #66bb66;
+}
+
+.info-row {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.info-box {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 10px 12px;
+  margin-bottom: 18px;
+}
+
+.info-box h2 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.info-box p {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Download page */
+.download-page {
+  margin-top: 32px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.download-page h1 {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.download-intro {
+  margin-bottom: 18px;
+}
+
+.download-section {
+  margin-bottom: 20px;
+}
+
+.download-section h2 {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.download-link {
+  font-weight: bold;
+}
+
+.download-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #cccccc;
+}
+
+/* Game page (/game) */
+.game-page {
+  margin-top: 32px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.game-page h1 {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.game-intro {
+  margin-bottom: 18px;
+}
+
+.game-section {
+  margin-bottom: 20px;
+}
+
+.game-section h2 {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+footer {
+  margin-top: 28px;
+  font-size: 11px;
+  color: #999999;
+}
+
+/* Community page */
+.community-page {
+  margin-top: 32px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.community-page h1 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.community-intro {
+  margin-bottom: 18px;
+}
+
+.community-section {
+  margin-bottom: 20px;
+}
+
+.community-section h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.community-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.community-section li {
+  margin-bottom: 6px;
+}
+
+/* First-visit disclaimer overlay */
+.disclaimer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.disclaimer-modal {
+  width: 520px;
+  max-width: 90%;
+  background: #2a241c url("assets/bg_main.png") repeat;
+  border: 2px solid #000000;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.8);
+  padding: 14px 16px 12px;
+  color: #e0d0d0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.disclaimer-modal h1 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.disclaimer-modal p {
+  margin-bottom: 8px;
+}
+
+.disclaimer-actions {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.disclaimer-btn {
+  margin-left: 8px;
+}
+
+

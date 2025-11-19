@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Update News</title>
+    <!-- Inline styles ensure the embedded launcher client (JEditorPane) picks up
+         list styling even if it ignores external stylesheets. -->
+    <style type="text/css">
+        ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
+        li { margin: 0 0 4px 0; padding: 0; }
+        code { font-family: monospace; font-size: 13px; }
+    </style>
+    <link rel="stylesheet" href="updates.css">
+    <link rel="icon" href="favicon.ico">
+</head>
+
+<body>
+    <div id="background-layer"></div>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <table class="layout-table" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                    <td class="posts-column" valign="top">
+                        <div class="site-title"><a href="/">Minecraft Oldschool Edition News</a></div>
+
+                        <!-- 1.3.1 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.3.1</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.3.1!</p>
+                                <p>Fixes:<br/>
+                                * Fixed a bug where hostile mobs could stay unusually calm during the day instead of attacking when they were supposed to.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Nov 07, 2025</span>
+                            </div>
+                        </article>
+
+                        <!-- 1.3 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.3</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.3!</p>
+                                <p>Features (Client):<br/>
+                                + Large internal refactor introducing registries for core game systems, laying the groundwork for a proper modding API.<br/>
+                                + Multiple visual glitches cleaned up.<br/>
+                                + Added an in-instance updater for Prism Launcher setups, with an Alpha-style popup when a new version is available.<br/>
+                                + Added an in-game Admin GUI to make moderating multiplayer servers easier.<br/>
+                                + Added an Accessibility menu, including subtitles for players with hearing impairments.</p>
+                                <p>Features (Server):<br/>
+                                + Matching internal registry work on the server to align with the future modding API.<br/>
+                                + New <code>/admin {playerName}</code> command that opens an admin control panel for handling disruptive players through a visual interface.</p>
+                                <p>Distribution:<br/>
+                                + Every release now ships with a standalone <code>patch.jar</code> so the auto-updater can consume it. It’s optional if you prefer manual installs.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Nov 02, 2025</span>
+                            </div>
+                        </article>
+
+                        <!-- 1.2.1 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.2.1</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.2.1!</p>
+                                <p>Features (Client):<br/>
+                                + Added a Classic-style Nether dimension option for Classic worlds.<br/>
+                                + Added a <code>/weather</code> command for changing weather conditions.<br/>
+                                + Creative players now instantly stop burning once they step off lava or fire.<br/>
+                                + Cobwebs and fluids no longer push players while they are flying in Creative mode.<br/>
+                                * Fixed rare collision edge cases.<br/>
+                                * Fixed certain music discs not playing correctly.<br/>
+                                * Fixed Ghasts ignoring the <code>mobgrief</code> gamerule and behaving incorrectly toward Creative players.</p>
+                                <p>Features (Server):<br/>
+                                + Classic-style Nether dimension support for Classic worlds on the server.<br/>
+                                + Added <code>/weather</code> command server-side to match the client.<br/>
+                                + Creative players stop burning as soon as they leave lava or fire.<br/>
+                                + Cobwebs and fluids no longer push flying Creative players.<br/>
+                                + Ghasts now properly respect the <code>mobgrief</code> gamerule and stop blowing things up when mob griefing is disabled.<br/>
+                                + Ghasts no longer target Creative players unprovoked.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Oct 29, 2025</span>
+                            </div>
+                        </article>
+
+                        <!-- 1.2 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.2 – “The Beta Engine That Could”</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.2 – “The Beta Engine That Could”!</p>
+                                <p>Features (Client):<br/>
+                                + Added a Classic world generator option.<br/>
+                                + Sheep now regrow wool by eating grass.<br/>
+                                + Introduced resource pack support using <code>pack.mcmeta</code> (custom packs may still have rough edges).<br/>
+                                + Implemented a new atlas-based texture engine inspired by modern Minecraft’s renderer.<br/>
+                                + Enabled 32×32 textures, with groundwork laid for higher resolutions in later releases.<br/>
+                                * Rebalanced block-breaking speeds toward modern behavior so blocks like obsidian are far less painful to deal with.</p>
+                                <p>Features (Server):<br/>
+                                + Classic world generator option available; set <code>level-type=CLASSIC</code> (or similar) in <code>server.properties</code>.<br/>
+                                + Sheep grow their wool back when grazing, matching the client behavior.<br/>
+                                + Added a “player tilt” death animation followed by smoke particles when a player dies.<br/>
+                                + Other players can now see block-breaking animations when someone punches blocks.<br/>
+                                + Added a <code>/vanish</code> command for moderators, using Moresteck’s UberBukkit Vanish API.<br/>
+                                * Updated block-breaking speeds server-side to align with the new client timings.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Oct 28, 2025</span>
+                            </div>
+                        </article>
+
+                        <!-- 1.2 Pre-Release 2 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.2 Pre-Release 2</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.2 Pre-Release 2!</p>
+                                <p>Fixes (Client):<br/>
+                                * Fixed a fullscreen-related bug on Linux so fullscreen mode behaves correctly again.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Oct 23, 2025</span>
+                            </div>
+                        </article>
+
+                        <!-- 1.2 Pre-Release 1 Client -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.2 Pre-Release 1 Client</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.2 Pre-Release 1 (Client)!</p>
+                                <p>Features (Client):<br/>
+                                + Introduced a new atlas-based texture engine to support future resource pack work.<br/>
+                                * Fixed several major, game-breaking issues related to dimension switching and item duplication exploits.<br/>
+                                * Adjusted some item names to better distinguish variants like saplings and logs.</p>
+                                <p>Notes:<br/>
+                                * Resource pack support here is a work in progress. Custom packs may only partially function or not work at all in this build.<br/>
+                                * The final 1.2 release includes more detailed and polished patch notes.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Oct 23, 2025</span>
+                            </div>
+                        </article>
+
+                        <!-- 1.1 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.1</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.1!</p>
+                                <p>Features (Client):<br/>
+                                + Added a dedicated “Alpha Snow World” world type.<br/>
+                                + Overhauled the console with tab auto-complete, syntax highlighting, copy/paste, clickable links, and more quality-of-life improvements.<br/>
+                                + Hostile mobs now properly ignore players in Creative mode.<br/>
+                                + Added huge mushrooms.<br/>
+                                + Added a search bar to the Creative inventory to find blocks and items faster.<br/>
+                                + Added stone brick blocks, including mossy and cracked variants.<br/>
+                                + Added stone brick stairs and slabs, plus brick stairs and slabs.<br/>
+                                * Fixed a variety of Creative mode bugs and inventory keyboard shortcut issues.</p>
+                                <p>Features (Server):<br/>
+                                + Migrated from the older ProjectPoseidon base to UberBukkit (MoreSteck’s improved fork).<br/>
+                                + Exposed the <code>ALPHA_SNOW</code> world type in <code>server.properties</code>.<br/>
+                                + Server now supports all new blocks, features, and fixes added on the client in this release.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Oct 19, 2025</span>
+                            </div>
+                        </article>
+
+                        <!-- 1.0.1 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.0.1</a>
+                            </h2>
+                    <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.0.1!</p>
+                                <p>Features (Client):<br/>
+                                + Added an FPS limit slider in Video Settings to control capped frame rate.<br/>
+                                * Fixed Alpha worlds rendering with incorrect colors on the first launch.<br/>
+                                * Fixed Creative worlds not actually starting the player in Creative mode on their first load.<br/>
+                                * Fixed fence gates not visually or logically connecting to fences.</p>
+                                <p>Features (Server):<br/>
+                                * Addressed some miscellaneous connectivity problems to improve server stability.</p>
+                                <p>// The Oldschool Team</p>
+                    </div>
+                    <div class="post-meta">
+                                <span class="date">Oct 12, 2025</span>
+                    </div>
+                </article>
+
+                        <!-- 1.0 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.0</a>
+                            </h2>
+                    <div class="post-body">
+                                <p>It’s time for Minecraft Oldschool Edition 1.0!</p>
+                                <p>Overview:<br/>
+                                * First public release of Minecraft Oldschool Edition. Expect rough edges and bugs.</p>
+                                <p>Features (Client):<br/>
+                                + Added snow golems (snowmen).<br/>
+                                + Added alternate world generators: flat worlds, Alpha-style worlds including Alpha Snow, and sky-type worlds.<br/>
+                                + Added an FOV slider.<br/>
+                                + Backported the Beta 1.8 style multiplayer menu.<br/>
+                                + Added fence gates.<br/>
+                                + Added new music discs.<br/>
+                                + Added slim player models and restored classic skins.<br/>
+                                + Restored many old sounds from earlier versions.<br/>
+                                + Added modern-style commands such as gamerules and summon.<br/>
+                                + Implemented tab-based auto-complete in the console.<br/>
+                                + Improved performance when detonating large stacks of TNT at once.<br/>
+                                + Added multiple easter eggs for players to discover.</p>
+                                <p>Features (Server):<br/>
+                                + Custom server jar includes all content listed above.<br/>
+                                + Restored Mojang authentication with encrypted packets, configurable via the Poseidon config under a “Modern Auth” style option.</p>
+                                <p>Utility:<br/>
+                                + Introduced the Minecraft Oldschool Edition Utility plugin for vanilla Bukkit, which:<br/>
+                                + Lets your server appear as “Oldschool Edition aware” to clients.<br/>
+                                + Can broadcast MOTD and player counts to Oldschool Edition clients.</p>
+                                <p>// The Oldschool Team</p>
+                    </div>
+                    <div class="post-meta">
+                                <span class="date">Oct 11, 2025</span>
+                    </div>
+                </article>
+
+                <div class="pagination">
+                    <a href="#" class="older-link">Older</a>
+                </div>
+                    </td>
+
+                    <td class="sidebar" valign="top" width="200">
+                <div class="sidebar-section">
+                            <h3>Official links:</h3>
+                    <div class="sidebar-links">
+                        <a href="https://discord.gg/fKsp5ZUyeE">Discord</a><br/>
+                        <a href="https://github.com/MinecraftOldschoolEdition">GitHub</a>
+                    </div>
+                </div>
+                <div class="sidebar-section">
+                            <h3>Community links:</h3>
+                    <div class="sidebar-links">
+                        <a href="https://www.reddit.com/r/GoldenAgeMinecraft/">r/GoldenAgeMinecraft</a><br/>
+                        <a href="https://discord.gg/8Qky5XY">Modification Station Server</a><br/>
+                        <a href="https://oldschoolminecraft.com/">Oldschool Minecraft Server</a>
+                    </div>
+                </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

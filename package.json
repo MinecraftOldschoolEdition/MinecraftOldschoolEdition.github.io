@@ -1,0 +1,11 @@
+{
+  "name": "minecraft-oldschool-edition-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "React-based replica of the 2012 minecraft.net homepage using CDN React and Babel.",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
+
+
