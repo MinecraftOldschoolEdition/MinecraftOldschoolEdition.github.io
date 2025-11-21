@@ -1,16 +1,16 @@
 {
   "capes": [
     {
-      "username": "Super",
-      "capeUrl": "https://minecraftoldschool.s3.us-east-2.amazonaws.com/capes/mojang_cape.png"
-    },
-    {
       "username": "Miclee",
-      "capeUrl": "https://minecraftoldschool.s3.us-east-2.amazonaws.com/capes/bacon_cape.png"
+      "capeUrl": "https://minecraftoldschool.com/assets/capes/bacon.png"
     },
     {
       "username": "EricWaffles",
       "capeUrl": "https://minecraftoldschool.com/assets/capes/developer.png"
+    },
+    {
+      "username": "spacemanspark",
+      "capeUrl": "https://minecraftoldschool.com/assets/capes/bug_squasher.png"
     }
   ]
 }
