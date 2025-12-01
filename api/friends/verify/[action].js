@@ -1,20 +1,20 @@
 /**
- * Friends Verification Relay API
+ * Friends Verification & Presence Relay API
  * 
- * When both players add each other as friends, verification happens automatically.
+ * Actions: add, check, exchange, remove, presence, getPresence
  * Rate limited to prevent abuse.
- * 
- * Actions: add, check, exchange, remove
  */
 
 // In-memory storage (use Vercel KV for production persistence)
 const friendRequests = new Map(); // key: `${userUuid}:${friendUuid}` -> request data
-const rateLimits = new Map(); // key: uuid -> { count, windowStart }
+const userPresence = new Map();   // key: uuid -> presence data
+const rateLimits = new Map();     // key: uuid -> { count, windowStart }
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window
-const RATE_LIMIT_MAX_REQUESTS = 10; // Max 10 requests per minute per user
+const RATE_LIMIT_MAX_REQUESTS = 30; // Max 30 requests per minute per user
+const PRESENCE_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes = offline
 
-// Clean expired requests (older than 24 hours)
+// Clean expired data
 function cleanExpired() {
     const now = Date.now();
     for (const [key, request] of friendRequests) {
@@ -22,7 +22,11 @@ function cleanExpired() {
             friendRequests.delete(key);
         }
     }
-    // Clean old rate limit entries
+    for (const [key, presence] of userPresence) {
+        if (now - presence.lastSeen > PRESENCE_TIMEOUT_MS * 2) {
+            userPresence.delete(key);
+        }
+    }
     for (const [key, limit] of rateLimits) {
         if (now - limit.windowStart > RATE_LIMIT_WINDOW_MS * 2) {
             rateLimits.delete(key);
@@ -42,7 +46,6 @@ function checkRateLimit(uuid) {
     let limit = rateLimits.get(uuid);
     
     if (!limit || now - limit.windowStart > RATE_LIMIT_WINDOW_MS) {
-        // New window
         limit = { count: 1, windowStart: now };
         rateLimits.set(uuid, limit);
         return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1 };
@@ -107,6 +110,10 @@ export default async function handler(req, res) {
                 return handleExchange(req, res, body);
             case 'remove':
                 return handleRemove(req, res, body);
+            case 'presence':
+                return handlePresenceUpdate(req, res, body);
+            case 'getPresence':
+                return handleGetPresence(req, res);
             default:
                 return res.status(404).json({ error: 'Unknown action' });
         }
@@ -117,9 +124,77 @@ export default async function handler(req, res) {
 }
 
 /**
+ * POST /presence
+ * Update the user's online presence
+ */
+function handlePresenceUpdate(req, res, body) {
+    const uuid = normalizeUuid(body.uuid);
+    const name = body.name || 'Unknown';
+    const status = body.status || 'ONLINE';
+    const activity = body.activity || 'UNKNOWN';
+    const serverAddress = body.serverAddress || null;
+    const serverName = body.serverName || null;
+    
+    if (!uuid) {
+        return res.status(400).json({ error: 'Missing uuid' });
+    }
+    
+    userPresence.set(uuid, {
+        uuid: uuid,
+        name: name,
+        status: status,
+        activity: activity,
+        serverAddress: serverAddress,
+        serverName: serverName,
+        lastSeen: Date.now()
+    });
+    
+    return res.status(200).json({ success: true });
+}
+
+/**
+ * GET /getPresence
+ * Get presence for one or more friends
+ * ?uuid=myUuid&friends=uuid1,uuid2,uuid3
+ */
+function handleGetPresence(req, res) {
+    const myUuid = normalizeUuid(req.query.uuid);
+    const friendsParam = req.query.friends || '';
+    
+    if (!myUuid) {
+        return res.status(400).json({ error: 'Missing uuid' });
+    }
+    
+    const friendUuids = friendsParam.split(',').map(u => normalizeUuid(u)).filter(u => u.length > 0);
+    const now = Date.now();
+    const results = {};
+    
+    for (const friendUuid of friendUuids) {
+        const presence = userPresence.get(friendUuid);
+        if (presence && (now - presence.lastSeen < PRESENCE_TIMEOUT_MS)) {
+            results[friendUuid] = {
+                name: presence.name,
+                status: presence.status,
+                activity: presence.activity,
+                serverAddress: presence.serverAddress,
+                serverName: presence.serverName,
+                lastSeen: presence.lastSeen
+            };
+        } else {
+            results[friendUuid] = {
+                status: 'OFFLINE',
+                activity: 'UNKNOWN',
+                lastSeen: presence ? presence.lastSeen : 0
+            };
+        }
+    }
+    
+    return res.status(200).json({ presence: results });
+}
+
+/**
  * POST /add
  * Called when a player adds someone as a friend.
- * Stores the friend request with signature for later verification.
  */
 function handleAdd(req, res, body) {
     const myUuid = normalizeUuid(body.uuid);
@@ -140,7 +215,6 @@ function handleAdd(req, res, body) {
     const myKey = `${myUuid}:${friendUuid}`;
     const theirKey = `${friendUuid}:${myUuid}`;
     
-    // Store my friend request
     friendRequests.set(myKey, {
         uuid: myUuid,
         name: myName,
@@ -153,7 +227,6 @@ function handleAdd(req, res, body) {
     
     console.log(`[verify] ${myName} (${myUuid.substring(0,8)}) added ${friendUuid.substring(0,8)} as friend`);
     
-    // Check if they've also added us - instant match!
     const theirRequest = friendRequests.get(theirKey);
     if (theirRequest) {
         console.log(`[verify] Mutual match! ${myUuid.substring(0,8)} <-> ${friendUuid.substring(0,8)}`);
@@ -167,7 +240,6 @@ function handleAdd(req, res, body) {
         });
     }
     
-    // No match yet
     return res.status(200).json({
         matched: false,
         message: 'Friend request stored. Waiting for them to add you back.'
@@ -176,8 +248,7 @@ function handleAdd(req, res, body) {
 
 /**
  * GET /check
- * Check if any friends have added us back (polling endpoint)
- * Can check for a specific friend or all pending
+ * Check if any friends have added us back
  */
 function handleCheck(req, res) {
     const myUuid = normalizeUuid(req.query.uuid);
@@ -187,7 +258,6 @@ function handleCheck(req, res) {
         return res.status(400).json({ error: 'Missing uuid' });
     }
     
-    // If checking specific friend
     if (friendUuid) {
         const theirKey = `${friendUuid}:${myUuid}`;
         const theirRequest = friendRequests.get(theirKey);
@@ -206,13 +276,10 @@ function handleCheck(req, res) {
         return res.status(200).json({ matched: false });
     }
     
-    // Check all - find any friends who have added us back
     const matches = [];
     for (const [key, request] of friendRequests) {
-        // Key format is "theirUuid:myUuid" - they added us
         if (key.endsWith(':' + myUuid)) {
             const theirUuid = key.split(':')[0];
-            // Check if we also added them
             const ourKey = `${myUuid}:${theirUuid}`;
             if (friendRequests.has(ourKey)) {
                 matches.push({
@@ -226,14 +293,11 @@ function handleCheck(req, res) {
         }
     }
     
-    return res.status(200).json({
-        matches: matches
-    });
+    return res.status(200).json({ matches: matches });
 }
 
 /**
  * POST /exchange
- * Update our signature after verification completes locally
  */
 function handleExchange(req, res, body) {
     const myUuid = normalizeUuid(body.uuid);
@@ -258,7 +322,6 @@ function handleExchange(req, res, body) {
 
 /**
  * POST /remove
- * Remove a friend request (when unfriending)
  */
 function handleRemove(req, res, body) {
     const myUuid = normalizeUuid(body.uuid);
