@@ -158,6 +158,60 @@ function HeroSection() {
 }
 
 function DownloadPage() {
+  var [clientUrl, setClientUrl] = React.useState(null);
+
+  React.useEffect(function () {
+    fetch(
+      "https://api.github.com/repos/MinecraftOldschoolEdition/downloads/releases/latest"
+    )
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error("GitHub API error " + res.status);
+        }
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data || !data.assets || !data.assets.length) {
+          return;
+        }
+        var assets = data.assets;
+        var asset = null;
+
+        // Look for the Minecraft.-.Oldschool.Edition.zip asset
+        for (var i = 0; i < assets.length; i++) {
+          var name = assets[i].name || "";
+          if (name.indexOf("Minecraft") !== -1 && name.indexOf("Oldschool") !== -1 && /\.zip$/i.test(name)) {
+            asset = assets[i];
+            break;
+          }
+        }
+
+        // Fallback to any .zip file
+        if (!asset) {
+          for (var j = 0; j < assets.length; j++) {
+            var name2 = assets[j].name || "";
+            if (/\.zip$/i.test(name2)) {
+              asset = assets[j];
+              break;
+            }
+          }
+        }
+
+        if (asset && asset.browser_download_url) {
+          setClientUrl(asset.browser_download_url);
+        }
+      })
+      .catch(function (err) {
+        console.error(
+          "[Oldschool Edition site] Failed to resolve latest client ZIP from GitHub releases",
+          err
+        );
+      });
+  }, []);
+
+  var fallbackUrl =
+    "https://github.com/MinecraftOldschoolEdition/downloads/releases/latest";
+
   return (
     <main className="download-page">
       <h1>Download</h1>
@@ -174,7 +228,12 @@ function DownloadPage() {
           Oldschool Edition.
         </p>
         <p>
-          <a className="download-link" href="#">
+          <a
+            className="download-link"
+            href={clientUrl || fallbackUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
             Download client (ZIP)
           </a>
         </p>
