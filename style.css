@@ -111,13 +111,14 @@ a:hover {
 }
 
 .hero-copy {
-  margin-bottom: 6px;
-  line-height: 1.5;
 }
 
 .hero-stats {
-  margin-bottom: 10px;
-  font-size: 13px;
+}
+
+.hero-left p {
+  line-height: 1.5;
+  margin: 0 0 10px;
 }
 
 .hero-right {
