@@ -2,7 +2,7 @@
   "name": "minecraft-oldschool-edition-website",
   "version": "1.0.0",
   "private": true,
-  "description": "React-based replica of the 2012 minecraft.net homepage using CDN React and Babel.",
+  "description": "Site for Minecraft Oldschool Edition, a Beta 1.7.3 mod built for the ultimate Oldschool experience.",
   "scripts": {
     "start": "npx serve ."
   }
