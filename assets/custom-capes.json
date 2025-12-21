@@ -1,4 +1,22 @@
 {
+  "eventCapes": [
+    {
+      "name": "Christmas",
+      "url": "https://minecraftoldschooledition.github.io/assets/capes/holiday.png",
+      "startMonth": 12,
+      "startDay": 24,
+      "endMonth": 12,
+      "endDay": 25
+    },
+    {
+      "name": "New Years",
+      "url": "https://minecraftoldschooledition.github.io/assets/capes/newyears.png",
+      "startMonth": 12,
+      "startDay": 31,
+      "endMonth": 1,
+      "endDay": 1
+    }
+  ],
   "capes": [
     {
       "username": "Miclee",
@@ -14,4 +32,3 @@
     }
   ]
 }
-
