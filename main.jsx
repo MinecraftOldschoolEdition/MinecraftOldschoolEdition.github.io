@@ -412,7 +412,7 @@ function CommunityPage() {
           </li>
           <li>
             <a href="https://github.com/MinecraftOldschoolEdition" target="_blank" rel="noreferrer">
-              GitHub &mdash; source code and issue tracker.
+              GitHub &mdash; all of our repos and releases.
             </a>
           </li>
           <li>
@@ -444,8 +444,7 @@ function CommunityPage() {
           </li>
           <li>
             <a href="https://oldschoolminecraft.com/" target="_blank" rel="noreferrer">
-              Oldschool Minecraft Server &mdash; a community hub and server list for Oldschool
-              Edition.
+              Oldschool Minecraft Server &mdash; a Vanilla b1.7.3 server with a wonderful community.
             </a>
           </li>
         </ul>
