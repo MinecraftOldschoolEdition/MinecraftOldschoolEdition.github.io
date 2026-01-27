@@ -117,7 +117,7 @@ function HeroSection() {
       <div className="hero-left">
         <div className="hero-video">
           <iframe
-            src="https://www.youtube.com/embed/MmB9b5njVbA"
+            src="https://www.youtube.com/embed/-inAAYQNajU"
             title="Minecraft Trailer"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
