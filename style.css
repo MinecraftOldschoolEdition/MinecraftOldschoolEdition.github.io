@@ -342,4 +342,103 @@ footer {
   margin-left: 8px;
 }
 
+/* Help page */
+.help-page {
+  margin-top: 32px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.help-page h1 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.help-intro {
+  margin-bottom: 18px;
+}
+
+.help-section {
+  margin-bottom: 24px;
+}
+
+.help-section h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.help-section p {
+  margin-bottom: 10px;
+}
+
+.help-section ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.help-section li {
+  margin-bottom: 6px;
+}
+
+.help-steps {
+  list-style: decimal;
+  padding-left: 24px;
+  margin-bottom: 14px;
+}
+
+.help-steps li {
+  margin-bottom: 8px;
+}
+
+/* Copy link box */
+.copy-link-box {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  max-width: 100%;
+}
+
+.link-input {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-family: monospace;
+  background-color: #1a1a1a;
+  border: 1px solid #444444;
+  color: #68a0ff;
+  cursor: text;
+}
+
+.link-input:focus {
+  outline: none;
+  border-color: #68a0ff;
+}
+
+.copy-btn {
+  padding: 8px 16px;
+  background-color: #55aa55;
+  border: 1px solid #1f5f1f;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background-color: #66bb66;
+}
+
+/* Help page screenshots */
+.help-screenshot {
+  display: block;
+  margin: 12px 0 16px;
+  max-width: 100%;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
 

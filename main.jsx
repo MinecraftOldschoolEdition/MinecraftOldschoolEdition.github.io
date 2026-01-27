@@ -47,6 +47,11 @@ function App() {
             <CommunityPage />
             <Footer />
           </>
+        ) : window.location.pathname.toLowerCase().indexOf("help") !== -1 ? (
+          <>
+            <HelpPage />
+            <Footer />
+          </>
         ) : (
           <>
             <HeroSection />
@@ -104,7 +109,7 @@ function Header() {
           <a href="game.html">Game</a>
           <a href="download.html">Download</a>
           <a href="community.html">Community</a>
-          <a href="#">Help</a>
+          <a href="help.html">Help</a>
         </nav>
       </div>
     </header>
@@ -446,6 +451,186 @@ function CommunityPage() {
             <a href="https://oldschoolminecraft.com/" target="_blank" rel="noreferrer">
               Oldschool Minecraft Server &mdash; a Vanilla b1.7.3 server with a wonderful community.
             </a>
+          </li>
+        </ul>
+      </section>
+    </main>
+  );
+}
+
+function HelpPage() {
+  var [clientUrl, setClientUrl] = React.useState(null);
+
+  React.useEffect(function () {
+    fetch(
+      "https://api.github.com/repos/MinecraftOldschoolEdition/downloads/releases/latest"
+    )
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error("GitHub API error " + res.status);
+        }
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data || !data.assets || !data.assets.length) {
+          return;
+        }
+        var assets = data.assets;
+        var asset = null;
+
+        // Look for the Minecraft.-.Oldschool.Edition.zip asset
+        for (var i = 0; i < assets.length; i++) {
+          var name = assets[i].name || "";
+          if (name.indexOf("Minecraft") !== -1 && name.indexOf("Oldschool") !== -1 && /\.zip$/i.test(name)) {
+            asset = assets[i];
+            break;
+          }
+        }
+
+        // Fallback to any .zip file
+        if (!asset) {
+          for (var j = 0; j < assets.length; j++) {
+            var name2 = assets[j].name || "";
+            if (/\.zip$/i.test(name2)) {
+              asset = assets[j];
+              break;
+            }
+          }
+        }
+
+        if (asset && asset.browser_download_url) {
+          setClientUrl(asset.browser_download_url);
+        }
+      })
+      .catch(function (err) {
+        console.error(
+          "[Oldschool Edition site] Failed to resolve latest client ZIP from GitHub releases",
+          err
+        );
+      });
+  }, []);
+
+  var fallbackUrl =
+    "https://github.com/MinecraftOldschoolEdition/downloads/releases/latest";
+  var displayUrl = clientUrl || fallbackUrl;
+
+  function copyToClipboard() {
+    if (navigator.clipboard && displayUrl) {
+      navigator.clipboard.writeText(displayUrl).then(function () {
+        alert("Link copied to clipboard!");
+      }).catch(function () {
+        alert("Failed to copy. Please select and copy the link manually.");
+      });
+    }
+  }
+
+  return (
+    <main className="help-page">
+      <h1>Installation Guide</h1>
+      <p className="help-intro">
+        Follow these steps to install Minecraft Oldschool Edition using Prism Launcher.
+      </p>
+
+      <section className="help-section">
+        <h2>Step 1: Install Prism Launcher</h2>
+        <p>
+          Minecraft Oldschool Edition requires <strong>Prism Launcher</strong> to run. If you don't
+          have it installed yet, download it from the official website:
+        </p>
+        <p>
+          <a
+            className="download-link"
+            href="https://prismlauncher.org"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Download Prism Launcher
+          </a>
+        </p>
+        <p>
+          Install Prism Launcher following the instructions for your operating system. Once installed,
+          open it and sign in with your Microsoft/Minecraft account.
+        </p>
+      </section>
+
+      <section className="help-section">
+        <h2>Step 2: Copy the Instance Link</h2>
+        <p>
+          Copy this link to the latest Oldschool Edition instance:
+        </p>
+        <div className="copy-link-box">
+          <input
+            type="text"
+            readOnly
+            value={displayUrl}
+            className="link-input"
+            onClick={function(e) { e.target.select(); }}
+          />
+          <button type="button" className="copy-btn" onClick={copyToClipboard}>
+            Copy
+          </button>
+        </div>
+      </section>
+
+      <section className="help-section">
+        <h2>Step 3: Import into Prism Launcher</h2>
+        <ol className="help-steps">
+          <li>Open <strong>Prism Launcher</strong></li>
+          <li>
+            Click <strong>Add Instance</strong> (the button with a plus sign at the top)
+            <img
+              src="assets/help/install/client/add instance button.png"
+              alt="Add Instance button in Prism Launcher"
+              className="help-screenshot"
+            />
+          </li>
+          <li>
+            Select the <strong>Import</strong> tab on the left side of the window, paste the link
+            you copied into the text field, and click <strong>OK</strong>
+            <img
+              src="assets/help/install/client/New Instance Screen.png"
+              alt="New Instance screen with Import tab selected"
+              className="help-screenshot"
+            />
+          </li>
+        </ol>
+        <p>
+          Prism Launcher will download and set up the instance automatically. Once complete, you'll
+          see "Minecraft - Oldschool Edition" in your instance list.
+        </p>
+      </section>
+
+      <section className="help-section">
+        <h2>Step 4: Launch the Game</h2>
+        <p>
+          Double-click the instance or select it and click <strong>Launch</strong>. On first launch,
+          the built-in updater will check for updates and download any required files.
+        </p>
+        <p>
+          That's it! You're ready to play Minecraft Oldschool Edition.
+        </p>
+      </section>
+
+      <section className="help-section">
+        <h2>Troubleshooting</h2>
+        <ul>
+          <li>
+            <strong>Java errors:</strong> Make sure you have Java 8 or newer installed. Prism Launcher
+            can download and manage Java versions for you in Settings → Java.
+          </li>
+          <li>
+            <strong>Login issues:</strong> Ensure you're signed in to Prism Launcher with a valid
+            Microsoft account that owns Minecraft.
+          </li>
+          <li>
+            <strong>Crashes on launch:</strong> Check that your graphics drivers are up to date.
+          </li>
+          <li>
+            <strong>Need more help?</strong> Join our{" "}
+            <a href="https://discord.gg/fKsp5ZUyeE" target="_blank" rel="noreferrer">
+              Discord server
+            </a>{" "}
+            for support.
           </li>
         </ul>
       </section>
