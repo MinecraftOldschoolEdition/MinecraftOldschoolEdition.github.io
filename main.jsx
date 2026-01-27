@@ -460,10 +460,14 @@ function CommunityPage() {
 
 function HelpPage() {
   var [clientUrl, setClientUrl] = React.useState(null);
+  var [versionTag, setVersionTag] = React.useState(null);
+  var [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(function () {
+    // Always fetch fresh from GitHub API to get the latest release
     fetch(
-      "https://api.github.com/repos/MinecraftOldschoolEdition/downloads/releases/latest"
+      "https://api.github.com/repos/MinecraftOldschoolEdition/downloads/releases/latest",
+      { cache: "no-store" } // Prevent browser caching
     )
       .then(function (res) {
         if (!res.ok) {
@@ -475,6 +479,12 @@ function HelpPage() {
         if (!data || !data.assets || !data.assets.length) {
           return;
         }
+        
+        // Store the version tag
+        if (data.tag_name) {
+          setVersionTag(data.tag_name);
+        }
+        
         var assets = data.assets;
         var asset = null;
 
@@ -507,6 +517,9 @@ function HelpPage() {
           "[Oldschool Edition site] Failed to resolve latest client ZIP from GitHub releases",
           err
         );
+      })
+      .finally(function () {
+        setIsLoading(false);
       });
   }, []);
 
@@ -556,18 +569,20 @@ function HelpPage() {
       <section className="help-section">
         <h2>Step 2: Copy the Instance Link</h2>
         <p>
-          Copy this link to the latest Oldschool Edition instance:
+          Copy this link to the latest Oldschool Edition instance
+          {versionTag && <span className="version-badge">({versionTag})</span>}:
         </p>
         <div className="copy-link-box">
           <input
             type="text"
             readOnly
-            value={displayUrl}
+            value={isLoading ? "Fetching latest version..." : displayUrl}
             className="link-input"
             onClick={function(e) { e.target.select(); }}
+            disabled={isLoading}
           />
-          <button type="button" className="copy-btn" onClick={copyToClipboard}>
-            Copy
+          <button type="button" className="copy-btn" onClick={copyToClipboard} disabled={isLoading}>
+            {isLoading ? "..." : "Copy"}
           </button>
         </div>
       </section>
@@ -615,7 +630,7 @@ function HelpPage() {
         <h2>Troubleshooting</h2>
         <ul>
           <li>
-            <strong>Java errors:</strong> Make sure you have Java 8 or newer installed. Prism Launcher
+            <strong>Java errors:</strong> Make sure you have Java 8 installed. Prism Launcher
             can download and manage Java versions for you in Settings → Java.
           </li>
           <li>

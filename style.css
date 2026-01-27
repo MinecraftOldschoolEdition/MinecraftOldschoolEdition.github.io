@@ -441,4 +441,22 @@ footer {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Version badge */
+.version-badge {
+  color: #55aa55;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* Loading state for copy box */
+.link-input:disabled {
+  color: #888888;
+  font-style: italic;
+}
+
+.copy-btn:disabled {
+  background-color: #444444;
+  cursor: wait;
+}
+
 
