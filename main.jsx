@@ -254,6 +254,10 @@ function DownloadPage() {
         </a>
         .
       </p>
+      
+      <p className="download-help-link">
+        Need help installing? <a href="help.html">Check out our installation guide</a>.
+      </p>
     </main>
   );
 }

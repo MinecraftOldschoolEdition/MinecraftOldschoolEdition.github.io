@@ -231,6 +231,15 @@ a:hover {
   color: #cccccc;
 }
 
+.download-help-link {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.download-help-link a {
+  font-weight: bold;
+}
+
 /* Game page (/game) */
 .game-page {
   margin-top: 32px;
