@@ -26,6 +26,52 @@
                     <td class="posts-column" valign="top">
                         <div class="site-title"><a href="/">Minecraft Oldschool Edition News</a></div>
 
+                        <!-- 1.7.4 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.7.4</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>A major compatibility and bug fix update!</p>
+                                <p>Features (Server):<br/>
+                                + Added <code>/gamerule keepInventory</code> – set to <code>true</code> to prevent players from dropping items on death (defaults to <code>false</code>).<br/>
+                                + The <code>keepInventory</code> gamerule is now available in tab-completion.</p>
+                                <p>Fixes (macOS &amp; LWJGL3):<br/>
+                                * <b>macOS is now fully supported!</b> The game runs natively on Apple Silicon and Intel Macs using LWJGL3.<br/>
+                                * Fixed black screen issues on macOS by properly handling AWT/GLFW conflicts.<br/>
+                                * Fixed font rendering and texture loading on macOS using STB image loading fallbacks.<br/>
+                                * The launcher now automatically installs required macOS compatibility patches.</p>
+                                <p>Fixes (Lighting &amp; Rendering):<br/>
+                                * Fixed <b>light sources not lighting up the environment</b> when chunk priority is set to "Fast Chunks". The lighting engine now dynamically adjusts processing rates to prevent dark patches.<br/>
+                                * Added fallback to synchronous lighting when the async queue is overloaded, ensuring lighting updates are never dropped.</p>
+                                <p>Fixes (Resource Packs):<br/>
+                                * Fixed <b>custom resource packs breaking all sounds</b>. The sound engine now only replaces sounds that exist in the resource pack, keeping defaults for everything else.<br/>
+                                * Fixed <b>resource pack textures not loading</b> when pack contents are in a subfolder. The game now auto-detects nested folder structures.<br/>
+                                * Fixed <b>pack.png thumbnails not displaying</b> in the resource pack menu.<br/>
+                                * Fixed <b>pack descriptions not loading</b> from pack.mcmeta files.</p>
+                                <p>Fixes (Input &amp; Controls):<br/>
+                                * Fixed <b>inconsistent mouse/camera smoothness</b> by ensuring VSync properly syncs with display refresh rate.<br/>
+                                * Fixed <b>keyboard input not working</b> in text fields (server address, chat, etc.) due to GLFW key/character event handling.<br/>
+                                * Added proper <b>Cmd+C/V/X/A support on macOS</b> for copy, paste, cut, and select all operations.</p>
+                                <p>Fixes (Server):<br/>
+                                * Fixed <b>unbanned hardcore players being unable to respawn</b>. After an admin unbans a hardcore player, they can now rejoin and click Respawn to continue playing.<br/>
+                                * Fixed <b>hardcore players switching to Survival mode</b> after being unbanned and respawning. Players now correctly stay in Hardcore mode.<br/>
+                                * Fixed <b>unbanned hardcore players logging in dead</b>. Health and death state are now reset on login for unbanned players.<br/>
+                                * Fixed <b>"Delete World" appearing in multiplayer hardcore</b> instead of the proper death screen.</p>
+                                <p>Fixes (Client):<br/>
+                                * Fixed the <b>Credits screen displaying garbled text</b>. Multi-line credits are now properly centered and wrapped to fit the screen.<br/>
+                                * Removed excessive debug logging that was spamming the console.</p>
+                                <p>Fixes (Launcher):<br/>
+                                + The launcher now automatically downloads and installs the <code>net.minecraft.json</code> compatibility patch for macOS users.</p>
+                                <p>Credits Update:<br/>
+                                * Updated in-game credits with proper attributions for Mojang Studios, C418, PhuWorks (Mojangles-v2 font), and EricWaffles.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Jan 31, 2026</span>
+                            </div>
+                        </article>
+
                         <!-- 1.7.3 -->
                         <article class="post">
                             <h2 class="post-title">
