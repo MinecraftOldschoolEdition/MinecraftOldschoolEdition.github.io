@@ -26,6 +26,50 @@
                     <td class="posts-column" valign="top">
                         <div class="site-title"><a href="/">Minecraft Oldschool Edition News</a></div>
 
+                        <!-- 1.7.6 -->
+                        <article class="post">
+                            <h2 class="post-title">
+                                <a href="#">1.7.6</a>
+                            </h2>
+                            <div class="post-body">
+                                <p>A comprehensive bug fix and performance update!</p>
+                                <p>Features (Client):<br/>
+                                + Added <b>performance profiler</b>! Use <code>/profile start</code>, <code>/profile stop</code>, and <code>/profile report</code> to diagnose performance issues and help identify bottlenecks.<br/>
+                                + <b>Creative search now uses localized names!</b> Searching for "axes" or "netherrack" now works correctly using the language file translations.<br/>
+                                + Added <b>voice chat settings</b> including microphone volume slider, noise suppression, auto gain, voice activation detection, and a live input level meter.<br/>
+                                + Added <b>Mic Test button</b> now previews your microphone audio in real-time before joining voice chat.</p>
+                                <p>Fixes (Client):<br/>
+                                * Fixed <b>ghost flames lingering on zombies and skeletons</b> killed by sunlight. Fire effects are now properly cleared on death.<br/>
+                                * Fixed <b>ghost items remaining after player death</b>. Stale entities are now cleaned up automatically.<br/>
+                                * Fixed <b>items visually dropping on death</b> when <code>keepInventory</code> is enabled. Players now see their items stay in their inventory.</p>
+                                <p>Performance (Client):<br/>
+                                + Added <b>memory pool limits</b> to prevent memory bloat from Vec3D and AxisAlignedBB object pools.<br/>
+                                + Optimized random block ticks and mob spawning for improved performance.<br/>
+                                + Added chunk unload tracking to the performance profiler for better memory analysis.</p>
+                                <p>Features (Server):<br/>
+                                + Added <b>performance profiler</b> with <code>/profile</code> command for players and console.<br/>
+                                + Added <b>Debug Commands section</b> to the Server GUI with profiler controls (Start, Stop, View Report, Save Report, Status, Clear).<br/>
+                                + The <code>advertiseAchievements</code> gamerule now defaults to <code>true</code> – achievements are broadcast to all players by default.</p>
+                                <p>Fixes (Server):<br/>
+                                * Fixed <b>arrows depleting in Creative mode</b> when using a bow. Creative players now have infinite arrows.<br/>
+                                * Fixed <b>books not saving</b> title, author, or page contents after signing in multiplayer.<br/>
+                                * Fixed <b>unsigned Book and Quill contents not persisting</b> in multiplayer.<br/>
+                                * Fixed <b>server ping flickering</b> between "Communication error" and normal MOTD when refreshing the server list.<br/>
+                                * Fixed <b>"End of stream" errors</b> when pinging saved servers – improved connection reliability.<br/>
+                                * Fixed <b>voice chat info messages being word-wrapped</b> and leaking fragments into chat.<br/>
+                                * Fixed <b>chat not working after switching from Hardcore to Survival</b>. Players who were in hardcore mode are now properly reset when the server changes game mode.<br/>
+                                * Fixed <b>keepInventory not preventing item drops</b> on death. Items no longer drop as entities when the gamerule is enabled.<br/>
+                                * Fixed <b>achievements not announcing in chat</b> (e.g., "Taking Inventory"). Added fallback achievement name translations.<br/>
+                                * Fixed missing translations for several achievements including "DIAMONDS!", "We Need to Go Deeper", "Librarian", and more.</p>
+                                <p>Performance (Server):<br/>
+                                + Added <b>memory leak prevention</b> with pool size limits for Vec3D and AxisAlignedBB objects.</p>
+                                <p>// The Oldschool Team</p>
+                            </div>
+                            <div class="post-meta">
+                                <span class="date">Feb 01, 2026</span>
+                            </div>
+                        </article>
+
                         <!-- 1.7.5 -->
                         <article class="post">
                             <h2 class="post-title">
