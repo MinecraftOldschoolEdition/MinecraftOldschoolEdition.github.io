@@ -20,15 +20,27 @@
   "capes": [
     {
       "username": "Miclee",
-      "capeUrl": "https://minecraftoldschool.com/assets/capes/bacon.png"
+      "capeUrl": "https://minecraftoldschooledition.github.io/assets/capes/bacon.png"
     },
     {
       "username": "EricWaffles",
-      "capeUrl": "https://minecraftoldschool.com/assets/capes/developer.png"
+      "capeUrl": "https://minecraftoldschooledition.github.io/assets/capes/developer.png"
     },
     {
       "username": "spacemanspark",
-      "capeUrl": "https://minecraftoldschool.com/assets/capes/bug_squasher.png"
+      "capeUrl": "https://minecraftoldschooledition.github.io/assets/capes/bug_squasher.png"
+    },
+    {
+      "username": "ask0t",
+      "capeUrl": "https://minecraftoldschooledition.github.io/assets/capes/translater.png"
+    },
+    {
+      "username": "Gab312",
+      "capeUrl": "https://minecraftoldschooledition.github.io/assets/capes/translater.png"
+    },
+    {
+      "username": "GumSL",
+      "capeUrl": "https://minecraftoldschooledition.github.io/assets/capes/translater.png"
     }
   ]
 }
