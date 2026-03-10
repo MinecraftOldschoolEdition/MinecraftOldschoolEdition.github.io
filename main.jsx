@@ -109,6 +109,7 @@ function Header() {
           <a href="game.html">Game</a>
           <a href="download.html">Download</a>
           <a href="community.html">Community</a>
+          <a href="updates.html">Updates</a>
           <a href="help.html">Help</a>
         </nav>
       </div>
