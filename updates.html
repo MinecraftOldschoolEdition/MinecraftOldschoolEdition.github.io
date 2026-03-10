@@ -11,6 +11,9 @@
         ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
         li { margin: 0 0 4px 0; padding: 0; }
         code { font-family: monospace; font-size: 13px; }
+        table.armor-matrix { border-collapse: collapse; margin: 0 0 10px 20px; font-family: monospace; font-size: 13px; color: #e0d0d0; }
+        table.armor-matrix th, table.armor-matrix td { border: 1px solid #8a8a8a; padding: 2px 8px; text-align: left; }
+        table.armor-matrix th { background: #2a2a2a; }
     </style>
     <link rel="stylesheet" href="updates.css">
     <link rel="icon" type="image/png" href="favicon.png">
@@ -40,6 +43,8 @@
                                 + In Vulkan mode, added <b>backface culling</b> and <b>GPU-driven mesh rendering</b> through the <code>Mesh Mode</code> setting in Video Settings.<br/>
                                 + Added <b>FSR 3.1 upscaling support</b> in Vulkan mode! (Great for Steam Deck!)<br/>
                                 + Added <b>mipmap texture filtering</b> support.<br/>
+                                + Added <b>VRR (Adaptive Sync)</b> support for compatible monitors.<br/>
+                                + Added a <b>Lazy Chunk Loader</b> option so chunks keep loading around you while standing still (similar to OptiFine).<br/>
                                 + Added an <b>isometric screenshot mode</b> on <code>F4</code> / <code>Down On D-Pad</code>, with matching keyboard/mouse and controller layouts.<br/>
                                 + Added an <b>Indev Title Screen</b> mode.<br/>
                                 + Added a <b>Zoom key</b> (default: <code>C</code>).<br/>
@@ -51,14 +56,23 @@
                                 + The "Press {Button} to open your inventory" achievement popup now displays the correctly assigned <b>inventory button icon</b> when using a controller.<br/>
                                 + <b>Quick Move</b> in inventory menus now plays the Console Edition-like <b>gliding animation</b> when moving the item.</p>
                                 <p>Gameplay Changes:<br/>
+                                + Updated armor balance while keeping durability unchanged. Damage reduction now scales by armor tier:</p>
+                                <table class="armor-matrix" cellspacing="0" cellpadding="0" border="1">
+                                    <tr><th>Tier</th><th>Armor</th><th>Damage Reduction</th></tr>
+                                    <tr><td>Leather</td><td>7</td><td>~28%</td></tr>
+                                    <tr><td>Gold</td><td>11</td><td>~44%</td></tr>
+                                    <tr><td>Chain</td><td>12</td><td>~48%</td></tr>
+                                    <tr><td>Iron</td><td>15</td><td>~60%</td></tr>
+                                    <tr><td>Diamond</td><td>20</td><td>~80%</td></tr>
+                                </table>
+                                <p>
                                 + Added <b>functional Sponges</b> that absorb water and become Wet Sponge after one use; dry them in a furnace to reuse them.<br/>
                                 + Added <b>Redstone Blocks</b> (crafted from 9 redstone) that provide constant power like redstone torches and can be pushed by pistons.<br/>
                                 + Added <b>Coal Blocks</b> (crafted from 9 coal); one Coal Block burns for 9x as long as one coal item.<br/>
                                 + <b>Chests can now be placed facing any direction</b> thanks to under-the-hood engine changes.<br/>
                                 + <b>Clocks can now be placed on walls</b> and output a redstone signal whose strength depends on time of day.<br/>
                                 + Added <b>Beta 1.8-style bow stances</b> as a visual-only option (toggleable in Eye Candy settings).<br/>
-                                + Alpha and Indev worlds now use more <b>era-accurate textures</b> for select blocks (including era-specific wool, metal blocks, and brick textures).<br/>
-                                + Updated armor balance while keeping durability unchanged: Leather 7 armor (~28%), Gold 11 armor (~44%), Chain 12 armor (~48%), Iron 15 armor (~60%), Diamond 20 armor (~80%).</p>
+                                + Alpha and Indev worlds now use more <b>era-accurate textures</b> for select blocks (including era-specific wool, metal blocks, and brick textures).</p>
                                 <p>Features (Server):<br/>
                                 + Multiplayer players and entities now move <b>much smoother</b>.<br/>
                                 + <b>Voice chat reliability has been significantly improved.</b> Voice now uses a dedicated UDP port with TCP fallback (default voice port: <code>24454</code>).<br/>
@@ -66,9 +80,9 @@
                                 + Transitioned engine compression from <b>Zlib to Zstd</b>.<br/>
                                 + Introduced <b>WAL logs</b> based on Scaevolus' recommendation.<br/>
                                 + Introduced <b>McRegion 2</b>, the successor to Scaevolus' McRegion format.<br/>
-                                + Added <b>better Alpha/McRegion conversion than vanilla</b> for improved legacy world migration.</p>
-                                <p>Credits Update:<br/>
-                                + Added <b>Scaevolus</b> to credits.</p>
+                                + Added <b>better Alpha/McRegion conversion than vanilla</b> for improved legacy world migration. <br/>
+                                + Added <b>Scaevolus</b> to the Credits menu for their work on the original McRegion format.<br/>
+                                - R̷͓̈́ë̵̱m̸̰̌o̴̜͝v̶̱̈́e̵̛̜d̸̰̈́ ̷̣̌H̸̰͝e̶̜̓r̷̰̈́o̵͓̓ḇ̸̌ṛ̶̈́ī̷̜n̵̰̈́e̸̱͝</p>
                                 <p>// The Oldschool Team</p>
                             </div>
                             <div class="post-meta">
