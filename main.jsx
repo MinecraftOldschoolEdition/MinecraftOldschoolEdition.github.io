@@ -100,9 +100,10 @@ function Header() {
     <header className="top-bar">
       <div className="top-inner">
         <div className="logo">
-          <a href="index.html">
-            <img src="assets/logo.png" alt="Minecraft Oldschool Edition" />
+          <a href="index.html" className="logo-link">
+            <img src="assets/logo.png" alt="Minecraft Oldschool Edition logo" />
           </a>
+          <span className="logo-splash">1.8 out now!</span>
         </div>
         <nav className="nav-links">
           <a href="index.html">Home</a>
@@ -131,16 +132,16 @@ function HeroSection() {
           ></iframe>
         </div>
         <p className="hero-copy">
-          Minecraft Oldschool Edition is a fan-made project built on Minecraft Beta 1.7.3 to
-          unify the best of all of Golden Age Minecraft's features, as well as implementing quality of life improvements. It keeps the old terrain, pacing and
-          atmosphere while improving the Beta client with a cleaner rendering pipeline, support for
-          higher-resolution textures and a handful of carefully chosen quality-of-life tweaks.
+          Minecraft Oldschool Edition is a fan-made overhaul built on Minecraft Beta 1.7.3.
+          It keeps the Golden Age terrain, pacing, and atmosphere, then layers in major
+          feature updates from across early eras plus modern quality-of-life improvements.
         </p>
         <p className="hero-stats">
-          Oldschool Edition ships as its own Beta 1.7.3-based client and server, designed to run
-          through <strong>Prism Launcher</strong>. The included updater (and optional standalone{" "}
-          <code>patch.jar</code>) keeps your installs in sync with new releases without constant
-          manual downloads.
+          The project ships with matching client and server builds for
+          <strong>Prism Launcher</strong>, a built-in updater, and optional
+          <code>patch.jar</code> distribution. Recent releases include a Vulkan renderer
+          with FSR support, expanded world generation options, stronger accessibility and
+          controller support, and smoother multiplayer.
         </p>
       </div>
       <div className="hero-right">
@@ -344,58 +345,52 @@ function GamePage() {
     <main className="game-page">
       <h1>About the game</h1>
       <p className="game-intro">
-        Minecraft Oldschool Edition is a mod for Minecraft Beta 1.7.3 that recreates takes the best of old Minecraft and combines it into one version, while adding upon it through quality of life improvements. It brings back old
-        terrain, pacing and atmosphere, then layers on stability fixes, quality-of-life tweaks and
-        a modern rendering / resource-pack pipeline.
+        Minecraft Oldschool Edition is a large-scale Beta 1.7.3 mod that preserves classic
+        Minecraft identity while substantially expanding what the game can do. You get
+        old-school terrain and progression, plus modernized rendering, world generation,
+        controls, accessibility, and multiplayer systems.
       </p>
 
       <section className="game-section">
         <h2>Origins</h2>
         <p>
-          Oldschool Edition grew out of a love for the early days of Minecraft and a desire to keep
-          that era playable. Instead of jumping to modern versions, the project is built on top of Beta 1.7.3
-          and forward/back-ports important features from the Golden Age as well as implementing quality of life improvements that exist in later versions: classic and Alpha Snow world generators, sky-style
-          maps and restored sounds run through a new atlas-based texture engine with support for
-          32×32 packs (and higher in later releases). Along the way, rough edges are smoothed out so
-          the nostalgia doesn’t come with 2010-era headaches.
+          Oldschool Edition started from a simple goal: keep early Minecraft genuinely
+          playable for the long term. Instead of recreating Beta from scratch, the project
+          evolves Beta 1.7.3 directly with careful backports, selective forward ports, and
+          targeted engine rewrites that remove old pain points without losing the original
+          feel.
         </p>
       </section>
 
       <section className="game-section">
         <h2>Development and philosophy</h2>
         <p>
-          Oldschool Edition is built iteratively on its Beta 1.7.3 foundation, release by release.
-          Under the hood the game now uses registries on both client and server to prepare for a
-          proper modding API and cleaner content additions. Client updates focus on making the
-          classic sandbox nicer to live in: an Accessibility menu with subtitles, an overhauled
-          console with tab-completion, copy/paste and clickable links, better creative tools like
-          search and huge mushrooms, and a steady stream of gameplay and stability improvements.
+          Development is iterative and release-driven. Each version improves a specific
+          layer of the game, from rendering and world formats to UI, controls, and gameplay
+          consistency. The codebase now uses broader registry-driven systems on both
+          client and server, which keeps updates scalable and sets up cleaner API work.
         </p>
         <p>
-          On the server side the philosophy is “classic gameplay, admin-friendly tooling”.
-          UberBukkit replaces the old ProjectPoseidon base, world types like
-          <code> ALPHA_SNOW</code> and <code> CLASSIC</code> are first-class, and moderators get
-          commands like <code> /admin</code> and <code> /vanish</code> so they can manage rule
-          breakers without extra plugins. Whenever something makes servers or modded setups less
-          reliable, it gets addressed quickly in new releases.
+          On the server side, the focus is classic gameplay with practical administration.
+          UberBukkit-based foundations, modern moderation commands, voice chat
+          improvements, and ongoing world compatibility work make Oldschool Edition much
+          easier to host, moderate, and migrate than a stock Beta setup.
         </p>
       </section>
 
       <section className="game-section">
         <h2>The future</h2>
         <p>
-          Future versions continue in the same direction as the updates we've already made: more authentic Alpha/Beta-inspired content (world types, mobs and blocks),
-          deeper registry-driven systems, and more server-side polish so Oldschool Edition is easy
-          to host and moderate. Features like the FPS limiter, rebalanced block-breaking speeds,
-          Classic Nether worlds, and improved creative tools show how the mod modernises rough
-          edges without losing the original challenge.
+          Future releases continue this direction: substantial updates that expand content
+          and technical depth without abandoning the Golden Age core. Recent changes such
+          as Vulkan/FSR rendering, major Sky Dimension work, new world generators, and
+          storage/networking upgrades show the scale and pace we are targeting.
         </p>
         <p>
-          Oldschool Edition is distributed as a Beta 1.7.3 client and server package that
-          you run through <strong>Prism Launcher</strong>. The Prism instance includes a built-in
-          updater and optional standalone <code>patch.jar</code> support so you don’t need to
-          redownload everything for each release, and servers can track the same release cadence as
-          the client.
+          Oldschool Edition ships as coordinated Beta 1.7.3 client and server packages for
+          <strong>Prism Launcher</strong>, with built-in update flow and optional
+          <code>patch.jar</code> support. That distribution model lets players and server
+          owners stay current quickly instead of reinstalling from scratch every release.
         </p>
       </section>
     </main>
@@ -670,5 +665,4 @@ function Footer() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
-
 

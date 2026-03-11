@@ -5,6 +5,13 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "Mojangles";
+  src: url("assets/fonts/mojangles-v2.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   background-color: #222222;
   background-image: url("assets/bg_main.png"); /* dirt-style tile, like the original */
@@ -47,6 +54,13 @@ a:hover {
 .logo {
   display: flex;
   align-items: center;
+  position: relative;
+}
+
+.logo-link {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
 }
 
 .logo img {
@@ -54,6 +68,43 @@ a:hover {
   /* Keep the logo small enough to fit fully inside the dirt header */
   max-height: 48px;
   height: 48px;
+}
+
+.logo-splash {
+  position: absolute;
+  right: -6px;
+  bottom: 8px;
+  z-index: 2;
+  color: #ffff00;
+  font-family: "Mojangles", sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 2px 2px 0 #3f3f00, 1px 1px 0 #000000;
+  transform-origin: center;
+  transform: rotate(-20deg) scale(1);
+  animation: logo-splash-bounce-v2 1s linear infinite;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@keyframes logo-splash-bounce-v2 {
+  0% {
+    transform: rotate(-20deg) scale(1);
+  }
+  25% {
+    transform: rotate(-20deg) scale(0.97);
+  }
+  50% {
+    transform: rotate(-20deg) scale(1);
+  }
+  75% {
+    transform: rotate(-20deg) scale(0.97);
+  }
+  100% {
+    transform: rotate(-20deg) scale(1);
+  }
 }
 
 .nav-links {
@@ -467,5 +518,3 @@ footer {
   background-color: #444444;
   cursor: wait;
 }
-
-
