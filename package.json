@@ -4,8 +4,12 @@
   "private": true,
   "description": "Site for Minecraft Oldschool Edition, a Beta 1.7.3 mod built for the ultimate Oldschool experience.",
   "scripts": {
-    "start": "npx serve ."
+    "start": "npx serve .",
+    "vendor:react": "mkdir -p vendor/react vendor/react-dom vendor/babel && cp node_modules/react/umd/react.development.js vendor/react/react.development.js && cp node_modules/react-dom/umd/react-dom.development.js vendor/react-dom/react-dom.development.js && cp node_modules/@babel/standalone/babel.min.js vendor/babel/babel.min.js"
+  },
+  "dependencies": {
+    "@babel/standalone": "7.29.7",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   }
 }
-
-
