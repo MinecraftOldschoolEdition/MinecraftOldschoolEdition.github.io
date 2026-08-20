@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "tagCatalogVersion": 2,
+  "tags": [
+    {
+      "id": "survival",
+      "label": "Survival",
+      "description": "Classic survival gameplay and progression.",
+      "color": "#FF5555",
+      "sortOrder": 10,
+      "active": true
+    },
+    {
+      "id": "creative",
+      "label": "Creative",
+      "description": "Creative building and unrestricted construction.",
+      "color": "#5555FF",
+      "sortOrder": 20,
+      "active": true
+    },
+    {
+      "id": "alpha",
+      "label": "Alpha",
+      "description": "Minecraft Alpha-era gameplay and worlds.",
+      "color": "#55FF55",
+      "sortOrder": 30,
+      "active": true
+    },
+    {
+      "id": "classic",
+      "label": "Classic",
+      "description": "Minecraft Classic-era gameplay and worlds.",
+      "color": "#FFAA00",
+      "sortOrder": 40,
+      "active": true
+    },
+    {
+      "id": "vanilla",
+      "label": "Vanilla",
+      "description": "Mostly unmodified oldschool gameplay.",
+      "color": "#AAAAAA",
+      "sortOrder": 50,
+      "active": true
+    },
+    {
+      "id": "economy",
+      "label": "Economy",
+      "description": "Trading, shops, currency, or player markets.",
+      "color": "#FFFF55",
+      "sortOrder": 60,
+      "active": true
+    },
+    {
+      "id": "pvp",
+      "label": "PvP",
+      "description": "Player-versus-player combat is a primary feature.",
+      "color": "#AA0000",
+      "sortOrder": 70,
+      "active": true
+    },
+    {
+      "id": "roleplay",
+      "label": "Roleplay",
+      "description": "Roleplay, lore, or community storytelling.",
+      "color": "#FF55FF",
+      "sortOrder": 80,
+      "active": true
+    },
+    {
+      "id": "minigames",
+      "label": "Minigames",
+      "description": "Short-form games, arenas, or rotating activities.",
+      "color": "#55FFFF",
+      "sortOrder": 90,
+      "active": true
+    },
+    {
+      "id": "anarchy",
+      "label": "Anarchy",
+      "description": "Minimal rules and unrestricted player competition.",
+      "color": "#AA00AA",
+      "sortOrder": 100,
+      "active": true
+    },
+    {
+      "id": "custom",
+      "label": "Custom",
+      "description": "Custom mechanics, worlds, or server-specific content.",
+      "color": "#FFFFFF",
+      "sortOrder": 110,
+      "active": true
+    }
+  ]
+}

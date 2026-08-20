@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createListingHandler, createSyncHandler, createTagsHandler } from '../lib/server-directory/http.js';
 import { InMemoryDirectoryStorage } from '../lib/server-directory/memory-storage.js';
@@ -253,8 +254,16 @@ test('tag catalog is versioned, cacheable, and supports 304', async () => {
   const first = response();
   await handler(request('GET'), first);
   assert.equal(first.body.schemaVersion, 1);
-  assert.equal(first.body.tagCatalogVersion, 1);
-  assert.equal(first.body.tags.length, 9);
+  assert.equal(first.body.tagCatalogVersion, 2);
+  assert.equal(first.body.tags.length, 11);
+  assert.deepEqual(
+    Object.fromEntries(first.body.tags.filter((tag) => ['creative', 'survival', 'alpha', 'classic'].includes(tag.id)).map((tag) => [tag.id, tag.color])),
+    { survival: '#FF5555', creative: '#5555FF', alpha: '#55FF55', classic: '#FFAA00' }
+  );
+  const sourceCatalog = JSON.parse(readFileSync(new URL('../server-directory-tags-v1.json', import.meta.url), 'utf8'));
+  assert.deepEqual(first.body, sourceCatalog);
+  assert.deepEqual(validateListingInput(listing({ tagIds: ['creative', 'alpha', 'classic'] })).tagIds,
+    ['creative', 'alpha', 'classic']);
   const second = response();
   await handler(request('GET', { headers: { 'if-none-match': first.headers.ETag } }), second);
   assert.equal(second.statusCode, 304);

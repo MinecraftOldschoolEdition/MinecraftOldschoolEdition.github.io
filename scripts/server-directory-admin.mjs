@@ -34,9 +34,16 @@ if (!databaseUrl) {
     const [command, ...args] = process.argv.slice(2);
     if (command === 'migrate') {
       const here = path.dirname(fileURLToPath(import.meta.url));
-      const migration = await fs.readFile(path.join(here, '..', 'migrations', '001_server_directory_v1.sql'), 'utf8');
-      await storage.sql.unsafe(migration);
-      console.log('Applied migrations/001_server_directory_v1.sql');
+      const migrationsDirectory = path.join(here, '..', 'migrations');
+      const migrationFiles = (await fs.readdir(migrationsDirectory))
+        .filter((file) => /^\d+_[a-z0-9_]+\.sql$/.test(file))
+        .sort();
+      if (!migrationFiles.length) throw new Error('No server-directory migrations were found.');
+      for (const migrationFile of migrationFiles) {
+        const migration = await fs.readFile(path.join(migrationsDirectory, migrationFile), 'utf8');
+        await storage.sql.unsafe(migration);
+        console.log(`Applied migrations/${migrationFile}`);
+      }
     } else if (command === 'create') {
       const label = normalizeLabel(args);
       const token = newToken();

@@ -4,7 +4,7 @@ This document is the shared contract for the Minecraft Oldschool Edition client,
 
 ## Ownership and security boundary
 
-The client reads the public directory, caches and searches metadata locally, resolves and pings endpoints, renders only recent successful pings, and sends listing-management requests to its connected server. It never receives a website bearer token.
+The client reads the public directory, caches and searches metadata locally, resolves and pings endpoints, renders fetched entries with online/offline state, and sends listing-management requests to its connected server. It never receives a website bearer token, and Join is enabled only for a successful current or fresh cached ping.
 
 UberBukkit owns the configured public endpoint and bearer token, captures the connected player's username and UUID, rechecks the native Bukkit permission on every mutation, validates bounded payloads, and performs authenticated HTTPS requests on its bounded worker pool. Results are scheduled back to the server thread.
 
@@ -14,7 +14,7 @@ The website is the final authority for credentials, normalization, validation, o
 
 - Public JSON schema: 1
 - Tag catalog schema: 1
-- Tag catalog version: 1
+- Tag catalog version: 2
 - Server-directory custom payload version: 1
 - MCOSE feature bit: `FEATURE_SERVER_DIRECTORY = 1 << 15`
 - Permission: `mcose.serverbrowser.advertise`, default `PermissionDefault.OP`
@@ -32,12 +32,13 @@ Response:
 ```json
 {
   "schemaVersion": 1,
-  "tagCatalogVersion": 1,
+  "tagCatalogVersion": 2,
   "tags": [
     {
       "id": "survival",
       "label": "Survival",
       "description": "Classic survival gameplay and progression.",
+      "color": "#FF5555",
       "sortOrder": 10,
       "active": true
     }
@@ -45,7 +46,9 @@ Response:
 }
 ```
 
-The canonical v1 IDs are `survival`, `creative`, `vanilla`, `economy`, `pvp`, `roleplay`, `minigames`, `anarchy`, and `custom`. Labels and descriptions come from this endpoint and are not duplicated as client constants.
+The canonical catalog lives in the standalone root file `server-directory-tags-v1.json`. The Vercel `/api/servers/tags` function loads and validates that file, then returns it with ETag/CDN caching. Clients fetch labels, descriptions, colors, ordering, and active state instead of compiling them into the client.
+
+Catalog v2 IDs are `survival`, `creative`, `alpha`, `classic`, `vanilla`, `economy`, `pvp`, `roleplay`, `minigames`, `anarchy`, and `custom`. Colors are six-digit RGB strings. The requested core colors are Creative `#5555FF`, Survival `#FF5555`, Alpha `#55FF55`, and Classic `#FFAA00`.
 
 ### GET /api/servers/sync?after=<sequence>&limit=<limit>
 
@@ -108,6 +111,8 @@ There is no authoritative `online` property. Creator UUID is stored internally w
 ### Authenticated /api/servers/listing
 
 Send `Authorization: Bearer <per-server-token>` over HTTPS. The credential owns exactly one stable listing identity.
+
+This is a Vercel Serverless Function/API route, as are the public tag and sync routes. Submission requires no separately hosted application server or long-running backend process; Postgres is only the durable data store used by the serverless functions.
 
 - `GET` returns `{"schemaVersion":1,"listing":null}` or the current listing.
 - `PUT` creates or updates. A create sends `expectedRevision: null`; an update sends the current positive revision.
@@ -182,7 +187,7 @@ The cache is `server-directory-cache-v1.json` in the client data directory, with
 The client:
 
 1. loads and validates the main file, then tries the backup;
-2. fetches tags when missing or older than 24 hours;
+2. fetches tags when the local catalog is older than catalog v2 or older than 24 hours;
 3. avoids automatic listing sync for five minutes after success;
 4. requests changes after the applied cursor and follows pagination;
 5. rejects out-of-order events, ignores duplicate/already-applied sequences, and accepts valid sequence gaps;
@@ -192,9 +197,9 @@ The client:
 9. resets to a snapshot when history retention requires it;
 10. uses exponential failure backoff up to 30 minutes and keeps stale cached metadata available.
 
-Opening the browser starts one bounded batch of at most eight concurrent pings with three-second connect/read timeouts. Fresh successful results live for 105 seconds and are prioritized. Only successful current or fresh cached results enter the visible model. Closing the GUI cancels pending work. Search and tag filtering are local and stable alphabetical ordering does not use listing number as rank.
+Opening the browser starts one bounded batch of at most eight concurrent pings with three-second connect/read timeouts. Fresh successful results live for 105 seconds and are prioritized. Every fetched listing enters the visible model: pending probes show `Checking...`, failed probes show `Offline`, and successful probes show latency/player status and permit Join. Closing the GUI cancels pending work. Search and tag filtering are local and stable alphabetical ordering does not use listing number as rank.
 
-The plus control uses the centralized texture path `/assets/minecraft/textures/gui/menu/server-browser/add.png` when present and otherwise renders a text `+` fallback. Saved servers are deduplicated by normalized host and port.
+The refresh control uses `/assets/minecraft/textures/gui/menu/server/refresh.png`, matching the main multiplayer menu. An unsaved row uses `/assets/minecraft/textures/gui/menu/server/add_server.png`; after the normalized endpoint is present in `servers.dat`, it changes to `/assets/minecraft/textures/gui/menu/server/checkmark.png`. Text glyphs remain failure-safe fallbacks. Saved servers are deduplicated by normalized host and port.
 
 ## Deployment and configuration
 
@@ -212,6 +217,8 @@ npm install
 DATABASE_URL='postgresql://...' npm run server-directory:migrate
 DATABASE_URL='postgresql://...' npm run server-directory:credential -- create "Human-readable server label"
 ```
+
+The migration command applies every numbered SQL file in order. Migration `002_server_directory_fetch_test_listing.sql` adds an idempotent, system-owned `Vercel Fetch Test` entry at `directory-test.minecraftoldschool.com:25565`. Its credential is permanently disabled and has no usable token. The entry is intentionally expected to show as Offline, proving that the browser fetched and rendered directory metadata before a real public server is configured.
 
 The create command prints a random 256-bit base64url token once and stores only its SHA-256 hash. Disable and rotate with:
 
@@ -265,16 +272,18 @@ UberBukkit:
 
 Manual end-to-end acceptance requires a migrated Postgres database and reachable public test server:
 
-1. provision a credential and configure UberBukkit's token and explicit public address;
-2. join with a compatible operator and confirm Advertise Server is enabled;
-3. join as an unauthorized player and confirm the entry is absent or denied;
-4. publish a name, description, and one to three fetched tags;
-5. open Server Browser on another client and verify snapshot cache creation;
-6. verify the row appears only after ping success, joins directly, and plus writes one deduplicated `servers.dat` entry;
-7. update description/tags and verify only a delta downloads, listing number remains stable, revision changes, and sequence advances;
-8. unlist and verify the deletion delta removes the cache entry;
-9. stop the server and verify it is omitted after refresh/TTL expiry;
-10. make the website unavailable and verify cached metadata is labeled stale and still pings without crashing.
+1. run all migrations and confirm `Vercel Fetch Test` appears as Offline, proving metadata was fetched even without a reachable Minecraft endpoint;
+2. provision a credential and configure UberBukkit's token and explicit public address;
+3. join with a compatible operator and confirm Advertise Server is enabled;
+4. join as an unauthorized player and confirm the entry is absent or denied;
+5. publish a name, description, and one to three fetched, color-coded tags;
+6. open Server Browser on another client and verify snapshot cache creation;
+7. verify the real row becomes online after ping success, joins directly, and the add-server icon writes one deduplicated `servers.dat` entry;
+8. verify the icon changes to the saved checkmark and pressing it again cannot add a duplicate;
+9. update description/tags and verify only a delta downloads, listing number remains stable, revision changes, and sequence advances;
+10. unlist and verify the deletion delta removes the cache entry;
+11. stop the real server and verify it remains visible as Offline after refresh/TTL expiry and cannot be joined;
+12. make the website unavailable and verify cached metadata is labeled stale and still pings without crashing.
 
 ## Upgrade behavior
 
