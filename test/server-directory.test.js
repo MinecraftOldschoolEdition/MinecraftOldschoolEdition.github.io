@@ -278,3 +278,27 @@ test('fetch-test migration creates one disabled-credential offline listing with 
   assert.match(migration, /'creator', jsonb_build_object\('username'/);
   assert.match(migration, /System-owned directory fetch test'[\s\S]*FALSE/);
 });
+
+test('sync route serves the static fetch-test snapshot before a database is configured', async () => {
+  const previous = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL;
+  try {
+    const handler = createSyncHandler();
+    const snapshot = response();
+    await handler(request('GET', { query: { after: '0' } }), snapshot);
+    assert.equal(snapshot.statusCode, 200);
+    assert.equal(snapshot.headers['X-MCOSE-Directory-Mode'], 'bootstrap');
+    assert.equal(snapshot.body.mode, 'snapshot');
+    assert.equal(snapshot.body.throughSequence, 0);
+    assert.equal(snapshot.body.listings[0].name, 'Vercel Fetch Test');
+    assert.deepEqual(snapshot.body.listings[0].tagIds, ['classic', 'alpha', 'survival']);
+
+    const reset = response();
+    await handler(request('GET', { query: { after: '12' } }), reset);
+    assert.equal(reset.body.resetRequired, true);
+    assert.equal(reset.body.throughSequence, 0);
+  } finally {
+    if (previous === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = previous;
+  }
+});

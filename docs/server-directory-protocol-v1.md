@@ -87,6 +87,8 @@ A request with `after>0` returns ascending changes strictly newer than that curs
 
 Every upsert contains a complete public listing. If `hasMore` is true, request the next page with the returned `throughSequence`. If `resetRequired` is true, discard only the cached listing set and cursor, preserve the tag catalog, and request `after=0`.
 
+Before `DATABASE_URL` is configured, the sync function deliberately operates in read-only bootstrap mode. It returns `server-directory-bootstrap-listings-v1.json` as a sequence-zero snapshot and sets `X-MCOSE-Directory-Mode: bootstrap`. A client carrying a positive database cursor receives `resetRequired`, resets to zero, and then fetches that snapshot. This makes the Offline `Vercel Fetch Test` row available for deployment/UI verification without weakening authenticated writes or silently accepting non-durable submissions.
+
 The public listing schema is:
 
 ```json
@@ -203,7 +205,7 @@ The refresh control uses `/assets/minecraft/textures/gui/menu/server/refresh.png
 
 ## Deployment and configuration
 
-The website requires:
+Durable directory sync and authenticated listing submission require:
 
 - `DATABASE_URL`: production Postgres connection URL
 - `SERVER_DIRECTORY_DB_POOL_SIZE`: optional, clamped to 1 through 5; default 1
@@ -218,7 +220,7 @@ DATABASE_URL='postgresql://...' npm run server-directory:migrate
 DATABASE_URL='postgresql://...' npm run server-directory:credential -- create "Human-readable server label"
 ```
 
-The migration command applies every numbered SQL file in order. Migration `002_server_directory_fetch_test_listing.sql` adds an idempotent, system-owned `Vercel Fetch Test` entry at `directory-test.minecraftoldschool.com:25565`. Its credential is permanently disabled and has no usable token. The entry is intentionally expected to show as Offline, proving that the browser fetched and rendered directory metadata before a real public server is configured.
+The migration command applies every numbered SQL file in order. Migration `002_server_directory_fetch_test_listing.sql` adds the same idempotent, system-owned `Vercel Fetch Test` entry used by `server-directory-bootstrap-listings-v1.json`, at `directory-test.minecraftoldschool.com:25565`. Its credential is permanently disabled and has no usable token. The entry is intentionally expected to show as Offline, proving that the browser fetched and rendered directory metadata before a real public server is configured.
 
 The create command prints a random 256-bit base64url token once and stores only its SHA-256 hash. Disable and rotate with:
 
