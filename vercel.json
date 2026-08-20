@@ -2,9 +2,20 @@
   "version": 2,
   "routes": [
     {
+      "src": "/api/servers/tags",
+      "dest": "/api/servers/tags.js"
+    },
+    {
+      "src": "/api/servers/sync",
+      "dest": "/api/servers/sync.js"
+    },
+    {
+      "src": "/api/servers/listing",
+      "dest": "/api/servers/listing.js"
+    },
+    {
       "src": "/api/friends/verify/(.*)",
       "dest": "/api/friends/verify/[action]?action=$1"
     }
   ]
 }
-
