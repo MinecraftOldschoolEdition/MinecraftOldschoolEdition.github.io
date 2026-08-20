@@ -201,7 +201,7 @@ The client:
 
 Opening the browser starts one bounded batch of at most eight concurrent pings with three-second connect/read timeouts. Fresh successful results live for 105 seconds and are prioritized. Every fetched listing enters the visible model: pending probes show `Checking...`, failed probes show `Offline`, and successful probes show latency/player status and permit Join. Closing the GUI cancels pending work. Search and tag filtering are local and stable alphabetical ordering does not use listing number as rank.
 
-The refresh control uses `/assets/minecraft/textures/gui/menu/server/refresh.png`, matching the main multiplayer menu. An unsaved row uses `/assets/minecraft/textures/gui/menu/server/add_server.png`; after the normalized endpoint is present in `servers.dat`, it changes to `/assets/minecraft/textures/gui/menu/server/checkmark.png`. Text glyphs remain failure-safe fallbacks. Saved servers are deduplicated by normalized host and port.
+The refresh control uses `/assets/minecraft/textures/gui/menu/server/refresh.png`, matching the main multiplayer menu. An unsaved row uses `/assets/minecraft/textures/gui/menu/server/add_server.png`; after the normalized endpoint is present in `servers.dat`, it changes to `/assets/minecraft/textures/gui/menu/server/checkmark.png`. Both states use the normal menu-button background. The adjacent `/assets/minecraft/textures/gui/menu/server/info.png` button opens a read-only details page containing the full name, description, endpoint, lister username, listing date, tags, and an online-gated Join button. Text glyphs remain failure-safe fallbacks. Saved servers are deduplicated by normalized host and port.
 
 ## Deployment and configuration
 
@@ -282,10 +282,11 @@ Manual end-to-end acceptance requires a migrated Postgres database and reachable
 6. open Server Browser on another client and verify snapshot cache creation;
 7. verify the real row becomes online after ping success, joins directly, and the add-server icon writes one deduplicated `servers.dat` entry;
 8. verify the icon changes to the saved checkmark and pressing it again cannot add a duplicate;
-9. update description/tags and verify only a delta downloads, listing number remains stable, revision changes, and sequence advances;
-10. unlist and verify the deletion delta removes the cache entry;
-11. stop the real server and verify it remains visible as Offline after refresh/TTL expiry and cannot be joined;
-12. make the website unavailable and verify cached metadata is labeled stale and still pings without crashing.
+9. verify the add/checkmark and information icons use normal menu-button chrome, and the information page shows the complete public listing fields;
+10. update description/tags and verify only a delta downloads, listing number remains stable, revision changes, and sequence advances;
+11. unlist and verify the deletion delta removes the cache entry;
+12. stop the real server and verify it remains visible as Offline after refresh/TTL expiry and cannot be joined;
+13. make the website unavailable and verify cached metadata is labeled stale and still pings without crashing.
 
 ## Upgrade behavior
 
