@@ -268,3 +268,13 @@ test('tag catalog is versioned, cacheable, and supports 304', async () => {
   await handler(request('GET', { headers: { 'if-none-match': first.headers.ETag } }), second);
   assert.equal(second.statusCode, 304);
 });
+
+test('fetch-test migration creates one disabled-credential offline listing with a valid public snapshot', () => {
+  const migration = readFileSync(new URL('../migrations/002_server_directory_fetch_test_listing.sql', import.meta.url), 'utf8');
+  assert.match(migration, /'Vercel Fetch Test'/);
+  assert.match(migration, /'directory-test\.minecraftoldschool\.com'/);
+  assert.match(migration, /ARRAY\['classic', 'alpha', 'survival'\]/);
+  assert.match(migration, /'schemaVersion', 1/);
+  assert.match(migration, /'creator', jsonb_build_object\('username'/);
+  assert.match(migration, /System-owned directory fetch test'[\s\S]*FALSE/);
+});
