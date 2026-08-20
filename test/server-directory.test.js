@@ -254,11 +254,15 @@ test('tag catalog is versioned, cacheable, and supports 304', async () => {
   const first = response();
   await handler(request('GET'), first);
   assert.equal(first.body.schemaVersion, 1);
-  assert.equal(first.body.tagCatalogVersion, 2);
-  assert.equal(first.body.tags.length, 11);
+  assert.equal(first.body.tagCatalogVersion, 3);
+  assert.equal(first.body.tags.length, 16);
   assert.deepEqual(
     Object.fromEntries(first.body.tags.filter((tag) => ['creative', 'survival', 'alpha', 'classic'].includes(tag.id)).map((tag) => [tag.id, tag.color])),
     { survival: '#FF5555', creative: '#5555FF', alpha: '#55FF55', classic: '#FFAA00' }
+  );
+  assert.deepEqual(
+    Object.fromEntries(first.body.tags.filter((tag) => ['default', 'sky', 'flat', 'alpha', 'alpha_snow', 'infdev', 'classic'].includes(tag.id)).map((tag) => [tag.id, tag.label])),
+    { default: 'Default', sky: 'Sky', flat: 'Superflat', alpha: 'Alpha', alpha_snow: 'Alpha (Snowy)', infdev: 'Infdev', classic: 'Classic' }
   );
   const sourceCatalog = JSON.parse(readFileSync(new URL('../server-directory-tags-v1.json', import.meta.url), 'utf8'));
   assert.deepEqual(first.body, sourceCatalog);

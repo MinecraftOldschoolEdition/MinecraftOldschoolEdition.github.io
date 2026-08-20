@@ -32,7 +32,7 @@ Response:
 ```json
 {
   "schemaVersion": 1,
-  "tagCatalogVersion": 2,
+  "tagCatalogVersion": 3,
   "tags": [
     {
       "id": "survival",
@@ -48,7 +48,7 @@ Response:
 
 The canonical catalog lives in the standalone root file `server-directory-tags-v1.json`. The Vercel `/api/servers/tags` function loads and validates that file, then returns it with ETag/CDN caching. Clients fetch labels, descriptions, colors, ordering, and active state instead of compiling them into the client.
 
-Catalog v2 IDs are `survival`, `creative`, `alpha`, `classic`, `vanilla`, `economy`, `pvp`, `roleplay`, `minigames`, `anarchy`, and `custom`. Colors are six-digit RGB strings. The requested core colors are Creative `#5555FF`, Survival `#FF5555`, Alpha `#55FF55`, and Classic `#FFAA00`.
+Catalog v3 IDs are `survival`, `creative`, `default`, `sky`, `flat`, `alpha`, `alpha_snow`, `infdev`, `classic`, `vanilla`, `economy`, `pvp`, `roleplay`, `minigames`, `anarchy`, and `custom`. The terrain-generator tags correspond exactly to the client's seven creatable choices: Default, Sky, Superflat, Alpha, Alpha (Snowy), Infdev, and Classic. Colors are six-digit RGB strings. The requested core colors are Creative `#5555FF`, Survival `#FF5555`, Alpha `#55FF55`, and Classic `#FFAA00`.
 
 ### GET /api/servers/sync?after=<sequence>&limit=<limit>
 
@@ -201,7 +201,7 @@ The client:
 
 Opening the browser starts one bounded batch of at most eight concurrent pings with three-second connect/read timeouts. Fresh successful results live for 105 seconds and are prioritized. Every fetched listing enters the visible model: pending probes show `Checking...`, failed probes show `Offline`, and successful probes show latency/player status and permit Join. Closing the GUI cancels pending work. Search and tag filtering are local and stable alphabetical ordering does not use listing number as rank.
 
-The refresh control uses `/assets/minecraft/textures/gui/menu/server/refresh.png`, matching the main multiplayer menu. An unsaved row uses `/assets/minecraft/textures/gui/menu/server/add_server.png`; after the normalized endpoint is present in `servers.dat`, it changes to `/assets/minecraft/textures/gui/menu/server/checkmark.png`. Both states use the normal menu-button background. The adjacent `/assets/minecraft/textures/gui/menu/server/info.png` button opens a read-only details page containing the full name, description, endpoint, lister username, listing date, tags, and an online-gated Join button. Text glyphs remain failure-safe fallbacks. Saved servers are deduplicated by normalized host and port.
+The refresh control uses `/assets/minecraft/textures/gui/menu/server/refresh.png`, matching the main multiplayer menu. An unsaved row uses `/assets/minecraft/textures/gui/menu/server/add_server.png`; after the normalized endpoint is present in `servers.dat`, it changes to `/assets/minecraft/textures/gui/menu/server/checkmark.png`. Both states use the normal menu-button background. The adjacent `/assets/minecraft/textures/gui/menu/server/info.png` button opens a read-only details page containing the full name, description, endpoint, lister username, listing date, tags, and an online-gated Join button. Tags render as color-backed chips with white shadowed text. The browser filter is a multi-select checkbox dropdown with a Select All option, and the server list retains wheel, drag, and controller scrolling with a visible scrollbar whenever the fetched rows exceed the viewport. Text glyphs remain failure-safe fallbacks. Saved servers are deduplicated by normalized host and port.
 
 ## Deployment and configuration
 
@@ -283,10 +283,11 @@ Manual end-to-end acceptance requires a migrated Postgres database and reachable
 7. verify the real row becomes online after ping success, joins directly, and the add-server icon writes one deduplicated `servers.dat` entry;
 8. verify the icon changes to the saved checkmark and pressing it again cannot add a duplicate;
 9. verify the add/checkmark and information icons use normal menu-button chrome, and the information page shows the complete public listing fields;
-10. update description/tags and verify only a delta downloads, listing number remains stable, revision changes, and sequence advances;
-11. unlist and verify the deletion delta removes the cache entry;
-12. stop the real server and verify it remains visible as Offline after refresh/TTL expiry and cannot be joined;
-13. make the website unavailable and verify cached metadata is labeled stale and still pings without crashing.
+10. verify multi-select tag filtering, Select All, colored tag chips, and wheel/scrollbar behavior with at least 100 directory rows;
+11. update description/tags and verify only a delta downloads, listing number remains stable, revision changes, and sequence advances;
+12. unlist and verify the deletion delta removes the cache entry;
+13. stop the real server and verify it remains visible as Offline after refresh/TTL expiry and cannot be joined;
+14. make the website unavailable and verify cached metadata is labeled stale and still pings without crashing.
 
 ## Upgrade behavior
 

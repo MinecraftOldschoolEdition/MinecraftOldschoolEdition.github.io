@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "tagCatalogVersion": 2,
+  "tagCatalogVersion": 3,
   "tags": [
     {
       "id": "survival",
@@ -19,11 +19,51 @@
       "active": true
     },
     {
+      "id": "default",
+      "label": "Default",
+      "description": "Beta 1.7.3-style default terrain generation.",
+      "color": "#00AA00",
+      "sortOrder": 30,
+      "active": true
+    },
+    {
+      "id": "sky",
+      "label": "Sky",
+      "description": "Terrain based on Notch's cancelled Sky Dimension.",
+      "color": "#55FFFF",
+      "sortOrder": 40,
+      "active": true
+    },
+    {
+      "id": "flat",
+      "label": "Superflat",
+      "description": "Flat grass terrain suited to building and Creative Mode.",
+      "color": "#55AA55",
+      "sortOrder": 50,
+      "active": true
+    },
+    {
       "id": "alpha",
       "label": "Alpha",
       "description": "Minecraft Alpha-era gameplay and worlds.",
       "color": "#55FF55",
-      "sortOrder": 30,
+      "sortOrder": 60,
+      "active": true
+    },
+    {
+      "id": "alpha_snow",
+      "label": "Alpha (Snowy)",
+      "description": "Alpha 1.1.1 terrain with permanent snow.",
+      "color": "#AAAAFF",
+      "sortOrder": 70,
+      "active": true
+    },
+    {
+      "id": "infdev",
+      "label": "Infdev",
+      "description": "Infdev 20100415-style terrain generation.",
+      "color": "#00AAAA",
+      "sortOrder": 80,
       "active": true
     },
     {
@@ -31,7 +71,7 @@
       "label": "Classic",
       "description": "Minecraft Classic-era gameplay and worlds.",
       "color": "#FFAA00",
-      "sortOrder": 40,
+      "sortOrder": 90,
       "active": true
     },
     {
@@ -39,7 +79,7 @@
       "label": "Vanilla",
       "description": "Mostly unmodified oldschool gameplay.",
       "color": "#AAAAAA",
-      "sortOrder": 50,
+      "sortOrder": 100,
       "active": true
     },
     {
@@ -47,7 +87,7 @@
       "label": "Economy",
       "description": "Trading, shops, currency, or player markets.",
       "color": "#FFFF55",
-      "sortOrder": 60,
+      "sortOrder": 110,
       "active": true
     },
     {
@@ -55,7 +95,7 @@
       "label": "PvP",
       "description": "Player-versus-player combat is a primary feature.",
       "color": "#AA0000",
-      "sortOrder": 70,
+      "sortOrder": 120,
       "active": true
     },
     {
@@ -63,7 +103,7 @@
       "label": "Roleplay",
       "description": "Roleplay, lore, or community storytelling.",
       "color": "#FF55FF",
-      "sortOrder": 80,
+      "sortOrder": 130,
       "active": true
     },
     {
@@ -71,7 +111,7 @@
       "label": "Minigames",
       "description": "Short-form games, arenas, or rotating activities.",
       "color": "#55FFFF",
-      "sortOrder": 90,
+      "sortOrder": 140,
       "active": true
     },
     {
@@ -79,7 +119,7 @@
       "label": "Anarchy",
       "description": "Minimal rules and unrestricted player competition.",
       "color": "#AA00AA",
-      "sortOrder": 100,
+      "sortOrder": 150,
       "active": true
     },
     {
@@ -87,7 +127,7 @@
       "label": "Custom",
       "description": "Custom mechanics, worlds, or server-specific content.",
       "color": "#FFFFFF",
-      "sortOrder": 110,
+      "sortOrder": 160,
       "active": true
     }
   ]
