@@ -4,17 +4,17 @@ This document is the shared contract for the Minecraft Oldschool Edition client,
 
 ## Ownership and security boundary
 
-The client reads the public directory, caches and searches metadata locally, resolves and pings endpoints, renders fetched entries with online/offline state, and sends listing-management requests to its connected server. It never receives a website bearer token, and Join is enabled only for a successful current or fresh cached ping.
+The client reads the public directory, caches and searches metadata locally, resolves and pings endpoints, renders fetched entries with online/offline state, and sends listing-management requests to its connected server. It never handles website credentials, and Join is enabled only for a successful current or fresh cached ping.
 
-UberBukkit owns the configured public endpoint and bearer token, captures the connected player's username and UUID, rechecks the native Bukkit permission on every mutation, validates bounded payloads, and performs authenticated HTTPS requests on its bounded worker pool. Results are scheduled back to the server thread.
+UberBukkit owns the configured public endpoint, captures the connected player's username and UUID, rechecks the native Bukkit permission on every mutation, validates bounded payloads, and performs token-free HTTPS requests on its bounded worker pool. Results are scheduled back to the server thread.
 
-The website is the final authority for credentials, normalization, validation, optimistic concurrency, cooldowns, durable listings, and the change log. It never pings submitted endpoints. Online state is deliberately absent from public metadata.
+The website is the final authority for endpoint normalization, validation, optimistic concurrency, cooldowns, durable listings, and the change log. The normalized public endpoint is the stable management key, so server owners do not provision or configure a token. It never pings submitted endpoints. Online state is deliberately absent from public metadata.
 
 ## Versions and identifiers
 
 - Public JSON schema: 1
 - Tag catalog schema: 1
-- Tag catalog version: 2
+- Tag catalog version: 4
 - Server-directory custom payload version: 1
 - MCOSE feature bit: `FEATURE_SERVER_DIRECTORY = 1 << 15`
 - Permission: `mcose.serverbrowser.advertise`, default `PermissionDefault.OP`
@@ -23,7 +23,7 @@ A `listingId` is an immutable UUID. A `listingNumber` is a positive generated id
 
 ## Public HTTP API
 
-All successful and error bodies use `Content-Type: application/json; charset=utf-8`. Public GET endpoints allow gzip, return ETags, honor `If-None-Match`, and may return 304. Tags use a long public CDN lifetime; sync responses use a short public CDN lifetime with stale-while-revalidate. Authenticated endpoints always use `Cache-Control: no-store`.
+All successful and error bodies use `Content-Type: application/json; charset=utf-8`. Public GET endpoints allow gzip, return ETags, honor `If-None-Match`, and may return 304. Tags use a long public CDN lifetime; sync responses use a short public CDN lifetime with stale-while-revalidate. Listing-management responses always use `Cache-Control: no-store`.
 
 ### GET /api/servers/tags
 
@@ -32,7 +32,7 @@ Response:
 ```json
 {
   "schemaVersion": 1,
-  "tagCatalogVersion": 3,
+  "tagCatalogVersion": 4,
   "tags": [
     {
       "id": "survival",
@@ -48,7 +48,7 @@ Response:
 
 The canonical catalog lives in the standalone root file `server-directory-tags-v1.json`. The Vercel `/api/servers/tags` function loads and validates that file, then returns it with ETag/CDN caching. Clients fetch labels, descriptions, colors, ordering, and active state instead of compiling them into the client.
 
-Catalog v3 IDs are `survival`, `creative`, `default`, `sky`, `flat`, `alpha`, `alpha_snow`, `infdev`, `classic`, `vanilla`, `economy`, `pvp`, `roleplay`, `minigames`, `anarchy`, and `custom`. The terrain-generator tags correspond exactly to the client's seven creatable choices: Default, Sky, Superflat, Alpha, Alpha (Snowy), Infdev, and Classic. Colors are six-digit RGB strings. The requested core colors are Creative `#5555FF`, Survival `#FF5555`, Alpha `#55FF55`, and Classic `#FFAA00`.
+Catalog v4 IDs are `survival`, `creative`, `default`, `sky`, `flat`, `alpha`, `alpha_snow`, `infdev`, `classic`, `vanilla`, `beta_1_7_3`, `economy`, `pvp`, `roleplay`, `minigames`, `anarchy`, and `custom`. `beta_1_7_3` is displayed as `Beta 1.7.3` for vanilla Beta 1.7.3 servers. The terrain-generator tags correspond exactly to the client's seven creatable choices: Default, Sky, Superflat, Alpha, Alpha (Snowy), Infdev, and Classic. Colors are six-digit RGB strings. The requested core colors are Creative `#5555FF`, Survival `#FF5555`, Alpha `#55FF55`, and Classic `#FFAA00`.
 
 ### GET /api/servers/sync?after=<sequence>&limit=<limit>
 
@@ -87,7 +87,7 @@ A request with `after>0` returns ascending changes strictly newer than that curs
 
 Every upsert contains a complete public listing. If `hasMore` is true, request the next page with the returned `throughSequence`. If `resetRequired` is true, discard only the cached listing set and cursor, preserve the tag catalog, and request `after=0`.
 
-Before `DATABASE_URL` is configured, the sync function deliberately operates in read-only bootstrap mode. It returns `server-directory-bootstrap-listings-v1.json` as a sequence-zero snapshot and sets `X-MCOSE-Directory-Mode: bootstrap`. A client carrying a positive database cursor receives `resetRequired`, resets to zero, and then fetches that snapshot. This makes the Offline `Vercel Fetch Test` row available for deployment/UI verification without weakening authenticated writes or silently accepting non-durable submissions.
+Before `DATABASE_URL` is configured, the sync function deliberately operates in read-only bootstrap mode. It returns `server-directory-bootstrap-listings-v1.json` as a sequence-zero snapshot and sets `X-MCOSE-Directory-Mode: bootstrap`. A client carrying a positive database cursor receives `resetRequired`, resets to zero, and then fetches that snapshot. This makes the Offline `Vercel Fetch Test` row available for deployment/UI verification without silently accepting non-durable submissions.
 
 The public listing schema is:
 
@@ -110,18 +110,20 @@ The public listing schema is:
 
 There is no authoritative `online` property. Creator UUID is stored internally when supplied but is not public.
 
-### Authenticated /api/servers/listing
+### Token-free /api/servers/listing
 
-Send `Authorization: Bearer <per-server-token>` over HTTPS. The credential owns exactly one stable listing identity.
+No `Authorization` header or per-server token is used. All operations require HTTPS and identify the listing by its validated, normalized public host and port.
 
 This is a Vercel Serverless Function/API route, as are the public tag and sync routes. Submission requires no separately hosted application server or long-running backend process; Postgres is only the durable data store used by the serverless functions.
 
-- `GET` returns `{"schemaVersion":1,"listing":null}` or the current listing.
+- `GET /api/servers/listing?host=play.example.net&port=25565` returns `{"schemaVersion":1,"listing":null}` or the current listing.
 - `PUT` creates or updates. A create sends `expectedRevision: null`; an update sends the current positive revision.
-- `DELETE` sends `{"expectedRevision":3}` and emits a deletion change.
+- `DELETE` sends `{"host":"play.example.net","port":25565,"expectedRevision":3}` and emits a deletion change.
 - A stale revision returns HTTP 409 with error details and the current public listing when active.
-- A mutation inside the configured per-credential cooldown returns HTTP 429.
+- A mutation inside the configured per-endpoint cooldown returns HTTP 429.
 - All mutations and their change records commit in the same Postgres transaction.
+
+Because the requested flow has no ownership credential, knowledge of an endpoint and its current public revision is sufficient to attempt an update or deletion. Validation, optimistic concurrency, endpoint uniqueness, cooldowns, and the in-game Bukkit permission prevent mistakes and local misuse, but they are not cryptographic proof of endpoint ownership.
 
 PUT body:
 
@@ -140,7 +142,7 @@ PUT body:
 }
 ```
 
-Stable errors have `{"schemaVersion":1,"error":{"code":"...","message":"...","details":{}}}`. Relevant status codes are 400 validation/HTTPS, 401 invalid or disabled credential, 404 missing listing, 409 revision or endpoint conflict, 413 oversized body, 429 cooldown, and 500 internal failure.
+Stable errors have `{"schemaVersion":1,"error":{"code":"...","message":"...","details":{}}}`. Relevant status codes are 400 validation/HTTPS, 404 missing listing, 409 revision or endpoint conflict, 413 oversized body, 429 cooldown, and 500 internal failure.
 
 ## Custom payload protocol
 
@@ -172,7 +174,7 @@ Mutation payloads are capped at 1024 bytes. Names are at most 64 characters, des
 
 RESULT fields after version are a result-code byte and a message UTF capped at 300 characters. Codes are 0 success, 1 validation/rate limit, 2 conflict, 3 authorization, 4 server configuration, and 5 website/unavailable.
 
-The feature is used only after the existing MCOSE hello negotiation confirms bit 15. GUI visibility is never authorization. UberBukkit rechecks `mcose.serverbrowser.advertise` for every mutation and never serializes its bearer token.
+The feature is used only after the existing MCOSE hello negotiation confirms bit 15. GUI visibility is never authorization. UberBukkit rechecks `mcose.serverbrowser.advertise` for every mutation. No website credential exists in server configuration or custom payloads.
 
 ## Validation and endpoint safety
 
@@ -189,7 +191,7 @@ The cache is `server-directory-cache-v1.json` in the client data directory, with
 The client:
 
 1. loads and validates the main file, then tries the backup;
-2. fetches tags when the local catalog is older than catalog v2 or older than 24 hours;
+2. fetches tags when the local catalog is older than catalog v4 or older than 24 hours;
 3. avoids automatic listing sync for five minutes after success;
 4. requests changes after the applied cursor and follows pagination;
 5. rejects out-of-order events, ignores duplicate/already-applied sequences, and accepts valid sequence gaps;
@@ -205,7 +207,7 @@ The refresh control uses `/assets/minecraft/textures/gui/menu/server/refresh.png
 
 ## Deployment and configuration
 
-Durable directory sync and authenticated listing submission require:
+Durable directory sync and token-free listing submission require:
 
 - `DATABASE_URL`: production Postgres connection URL
 - `SERVER_DIRECTORY_DB_POOL_SIZE`: optional, clamped to 1 through 5; default 1
@@ -217,17 +219,9 @@ Install and migrate:
 ```text
 npm install
 DATABASE_URL='postgresql://...' npm run server-directory:migrate
-DATABASE_URL='postgresql://...' npm run server-directory:credential -- create "Human-readable server label"
 ```
 
-The migration command applies every numbered SQL file in order. Migration `002_server_directory_fetch_test_listing.sql` adds the same idempotent, system-owned `Vercel Fetch Test` entry used by `server-directory-bootstrap-listings-v1.json`, at `directory-test.minecraftoldschool.com:25565`. Its credential is permanently disabled and has no usable token. The entry is intentionally expected to show as Offline, proving that the browser fetched and rendered directory metadata before a real public server is configured.
-
-The create command prints a random 256-bit base64url token once and stores only its SHA-256 hash. Disable and rotate with:
-
-```text
-DATABASE_URL='postgresql://...' npm run server-directory:credential -- disable <credential-id>
-DATABASE_URL='postgresql://...' npm run server-directory:credential -- rotate <credential-id>
-```
+The migration command applies every numbered SQL file in order. Migration `002_server_directory_fetch_test_listing.sql` adds the same idempotent, system-owned `Vercel Fetch Test` entry used by `server-directory-bootstrap-listings-v1.json`, at `directory-test.minecraftoldschool.com:25565`. Its legacy schema credential row is permanently disabled and has no usable token. The entry is intentionally expected to show as Offline, proving that the browser fetched and rendered directory metadata before a real public server is configured. New endpoint-owned listings also receive an internal disabled foreign-key row for compatibility with the existing schema; it is never returned, configured, or accepted as authentication.
 
 Prune old change history periodically; clients older than retained history receive `resetRequired`:
 
@@ -239,13 +233,12 @@ UberBukkit writes these defaults to `uberbukkit.yml`:
 
 ```yaml
 server-browser:
-  enabled: false
+  enabled: true
   api-base-url: "https://minecraftoldschool.com"
   public-address: ""
-  token: ""
 ```
 
-Set `enabled: true`, set the explicitly advertised public hostname and optional port, and place the provisioned token in `token` or preferably in `MCOSE_SERVER_BROWSER_TOKEN`. The environment variable overrides the file. Do not infer the public address from a socket or LAN interface.
+Set the explicitly advertised public hostname and optional port. No token or environment secret is required. Do not infer the public address from a socket or LAN interface.
 
 The client public API base defaults to `https://minecraftoldschool.com`. `-Dmcose.serverDirectoryApiBase=...` can override it. Plain HTTP is accepted only for localhost tests when `-Dmcose.serverDirectoryAllowInsecureLocal=true`.
 
@@ -275,7 +268,7 @@ UberBukkit:
 Manual end-to-end acceptance requires a migrated Postgres database and reachable public test server:
 
 1. run all migrations and confirm `Vercel Fetch Test` appears as Offline, proving metadata was fetched even without a reachable Minecraft endpoint;
-2. provision a credential and configure UberBukkit's token and explicit public address;
+2. configure only UberBukkit's explicit public address and confirm no token is present or required;
 3. join with a compatible operator and confirm Advertise Server is enabled;
 4. join as an unauthorized player and confirm the entry is absent or denied;
 5. publish a name, description, and one to three fetched, color-coded tags;

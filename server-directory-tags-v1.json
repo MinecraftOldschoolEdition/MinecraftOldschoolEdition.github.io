@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "tagCatalogVersion": 3,
+  "tagCatalogVersion": 4,
   "tags": [
     {
       "id": "survival",
@@ -83,11 +83,19 @@
       "active": true
     },
     {
+      "id": "beta_1_7_3",
+      "label": "Beta 1.7.3",
+      "description": "Vanilla Minecraft Beta 1.7.3 gameplay.",
+      "color": "#AA5500",
+      "sortOrder": 110,
+      "active": true
+    },
+    {
       "id": "economy",
       "label": "Economy",
       "description": "Trading, shops, currency, or player markets.",
       "color": "#FFFF55",
-      "sortOrder": 110,
+      "sortOrder": 120,
       "active": true
     },
     {
@@ -95,7 +103,7 @@
       "label": "PvP",
       "description": "Player-versus-player combat is a primary feature.",
       "color": "#AA0000",
-      "sortOrder": 120,
+      "sortOrder": 130,
       "active": true
     },
     {
@@ -103,7 +111,7 @@
       "label": "Roleplay",
       "description": "Roleplay, lore, or community storytelling.",
       "color": "#FF55FF",
-      "sortOrder": 130,
+      "sortOrder": 140,
       "active": true
     },
     {
@@ -111,7 +119,7 @@
       "label": "Minigames",
       "description": "Short-form games, arenas, or rotating activities.",
       "color": "#55FFFF",
-      "sortOrder": 140,
+      "sortOrder": 150,
       "active": true
     },
     {
@@ -119,7 +127,7 @@
       "label": "Anarchy",
       "description": "Minimal rules and unrestricted player competition.",
       "color": "#AA00AA",
-      "sortOrder": 150,
+      "sortOrder": 160,
       "active": true
     },
     {
@@ -127,7 +135,7 @@
       "label": "Custom",
       "description": "Custom mechanics, worlds, or server-specific content.",
       "color": "#FFFFFF",
-      "sortOrder": 160,
+      "sortOrder": 170,
       "active": true
     }
   ]

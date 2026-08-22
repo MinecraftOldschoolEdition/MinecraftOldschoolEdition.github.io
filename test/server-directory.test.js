@@ -3,11 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createListingHandler, createSyncHandler, createTagsHandler } from '../lib/server-directory/http.js';
 import { InMemoryDirectoryStorage } from '../lib/server-directory/memory-storage.js';
-import { hashCredentialToken } from '../lib/server-directory/postgres-storage.js';
 import { validateListingInput } from '../lib/server-directory/validation.js';
 
-const TOKEN_A = 'A'.repeat(43);
-const TOKEN_B = 'B'.repeat(43);
+const ENDPOINT_A = 'play.example.net:25565';
+const ENDPOINT_B = 'two.example.net:25565';
 
 function request(method, options = {}) {
   return {
@@ -31,10 +30,11 @@ function response() {
   };
 }
 
-function authorized(method, body, token = TOKEN_A) {
+function listingRequest(method, body, query = {}) {
   return request(method, {
-    headers: { authorization: `Bearer ${token}`, 'x-forwarded-proto': 'https' },
-    body
+    headers: { 'x-forwarded-proto': 'https' },
+    body,
+    query
   });
 }
 
@@ -52,65 +52,44 @@ function listing(overrides = {}) {
 
 async function setup() {
   const storage = new InMemoryDirectoryStorage();
-  const a = await storage.createCredential('Primary server', hashCredentialToken(TOKEN_A), '550e8400-e29b-41d4-a716-446655440001');
-  const b = await storage.createCredential('Second server', hashCredentialToken(TOKEN_B), '550e8400-e29b-41d4-a716-446655440002');
-  return { storage, a, b };
+  return { storage };
 }
 
-test('credential tokens are hashed and disabled credentials cannot authenticate', async () => {
-  const { storage, a } = await setup();
-  assert.notEqual(storage.credentials.get(a.id).tokenHash, TOKEN_A);
-  assert.equal(storage.credentials.get(a.id).tokenHash, hashCredentialToken(TOKEN_A));
-  assert.equal((await storage.authenticate(TOKEN_A)).id, a.id);
-  await storage.disableCredential(a.id);
-  assert.equal(await storage.authenticate(TOKEN_A), null);
-});
-
-test('disabling a credential disables its active listing and emits a deletion change', async () => {
-  const { storage, a } = await setup();
-  const created = await storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 0 });
-  await storage.disableCredential(a.id);
-  assert.equal(await storage.getListing(a.id), null);
-  assert.deepEqual(await storage.getDelta(created.changeSequence, 250), {
-    resetRequired: false,
-    throughSequence: created.changeSequence + 1,
-    changes: [{ sequence: created.changeSequence + 1, operation: 'delete', listingId: created.listing.listingId }],
-    hasMore: false
-  });
-});
-
-test('authenticated handler rejects missing or invalid credentials', async () => {
+test('listing handler requires no token and keys state by normalized endpoint', async () => {
   const { storage } = await setup();
   const handler = createListingHandler(storage);
-  for (const req of [request('GET', { headers: { 'x-forwarded-proto': 'https' } }), authorized('GET', undefined, 'Z'.repeat(43))]) {
-    const res = response();
-    await handler(req, res);
-    assert.equal(res.statusCode, 401);
-    assert.equal(res.body.error.code, 'unauthorized');
-    assert.equal(res.headers['Cache-Control'], 'no-store');
-  }
+  const created = response();
+  await handler(listingRequest('PUT', listing()), created);
+  assert.equal(created.statusCode, 201);
+
+  const fetched = response();
+  await handler(listingRequest('GET', undefined, { host: 'PLAY.Example.NET', port: '25565' }), fetched);
+  assert.equal(fetched.statusCode, 200);
+  assert.equal(fetched.body.listing.listingId, created.body.listing.listingId);
+  assert.equal(fetched.headers['Cache-Control'], 'no-store');
 });
 
-test('authenticated endpoint rejects plaintext transport before reading credentials', async () => {
+test('anonymous listing endpoint still rejects plaintext transport', async () => {
   const { storage } = await setup();
   const res = response();
   await createListingHandler(storage)(request('GET', {
-    headers: { authorization: `Bearer ${TOKEN_A}`, 'x-forwarded-proto': 'http' }
+    headers: { 'x-forwarded-proto': 'http' },
+    query: { host: 'play.example.net', port: '25565' }
   }), res);
   assert.equal(res.statusCode, 400);
   assert.equal(res.body.error.code, 'https_required');
 });
 
 test('create and update advance sequences while preserving listing identity and number', async () => {
-  const { storage, a, b } = await setup();
-  const created = await storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 0 });
-  const second = await storage.putListing(b.id, validateListingInput(listing({ host: 'two.example.net' })), { cooldownMs: 0 });
+  const { storage } = await setup();
+  const created = await storage.putListing(validateListingInput(listing()), { cooldownMs: 0 });
+  const second = await storage.putListing(validateListingInput(listing({ host: 'two.example.net' })), { cooldownMs: 0 });
   assert.equal(created.listing.listingNumber, 1);
   assert.equal(second.listing.listingNumber, 2);
   assert.equal(created.changeSequence, 1);
   assert.equal(second.changeSequence, 2);
 
-  const updated = await storage.putListing(a.id, validateListingInput(listing({ expectedRevision: 1, description: 'Updated description.' })), { cooldownMs: 0 });
+  const updated = await storage.putListing(validateListingInput(listing({ expectedRevision: 1, description: 'Updated description.' })), { cooldownMs: 0 });
   assert.equal(updated.created, false);
   assert.equal(updated.listing.listingId, created.listing.listingId);
   assert.equal(updated.listing.listingNumber, created.listing.listingNumber);
@@ -119,19 +98,19 @@ test('create and update advance sequences while preserving listing identity and 
 });
 
 test('stale revisions return a useful conflict with current listing state', async () => {
-  const { storage, a } = await setup();
-  await storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 0 });
-  await storage.putListing(a.id, validateListingInput(listing({ expectedRevision: 1, description: 'Second revision.' })), { cooldownMs: 0 });
+  const { storage } = await setup();
+  await storage.putListing(validateListingInput(listing()), { cooldownMs: 0 });
+  await storage.putListing(validateListingInput(listing({ expectedRevision: 1, description: 'Second revision.' })), { cooldownMs: 0 });
   await assert.rejects(
-    storage.putListing(a.id, validateListingInput(listing({ expectedRevision: 1, description: 'Stale write.' })), { cooldownMs: 0 }),
+    storage.putListing(validateListingInput(listing({ expectedRevision: 1, description: 'Stale write.' })), { cooldownMs: 0 }),
     (error) => error.status === 409 && error.code === 'revision_conflict' && error.listing.revision === 2
   );
 });
 
 test('unlisting creates a deletion tombstone and removes the listing from snapshots', async () => {
-  const { storage, a } = await setup();
-  const created = await storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 0 });
-  const deleted = await storage.deleteListing(a.id, 1, { cooldownMs: 0 });
+  const { storage } = await setup();
+  const created = await storage.putListing(validateListingInput(listing()), { cooldownMs: 0 });
+  const deleted = await storage.deleteListing(ENDPOINT_A, 1, { cooldownMs: 0 });
   assert.equal(deleted.listingId, created.listing.listingId);
   assert.equal(deleted.revision, 2);
   assert.deepEqual((await storage.getSnapshot()).listings, []);
@@ -143,12 +122,12 @@ test('unlisting creates a deletion tombstone and removes the listing from snapsh
   });
 });
 
-test('active normalized endpoints are unique across credentials', async () => {
-  const { storage, a, b } = await setup();
-  await storage.putListing(a.id, validateListingInput(listing({ host: 'PLAY.Example.NET' })), { cooldownMs: 0 });
+test('normalized endpoint is the stable anonymous listing identity', async () => {
+  const { storage } = await setup();
+  await storage.putListing(validateListingInput(listing({ host: 'PLAY.Example.NET' })), { cooldownMs: 0 });
   await assert.rejects(
-    storage.putListing(b.id, validateListingInput(listing()), { cooldownMs: 0 }),
-    (error) => error.status === 409 && error.code === 'duplicate_endpoint'
+    storage.putListing(validateListingInput(listing()), { cooldownMs: 0 }),
+    (error) => error.status === 409 && error.code === 'revision_conflict'
   );
 });
 
@@ -170,9 +149,9 @@ test('listing validation rejects invalid tags, excess tags, metadata, and unsafe
 });
 
 test('cold snapshots, incremental deltas, pagination, ETags, and 304 work', async () => {
-  const { storage, a, b } = await setup();
-  await storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 0 });
-  await storage.putListing(b.id, validateListingInput(listing({ host: 'two.example.net' })), { cooldownMs: 0 });
+  const { storage } = await setup();
+  await storage.putListing(validateListingInput(listing()), { cooldownMs: 0 });
+  await storage.putListing(validateListingInput(listing({ host: 'two.example.net' })), { cooldownMs: 0 });
   const handler = createSyncHandler(storage);
 
   const snapshotRes = response();
@@ -195,8 +174,8 @@ test('cold snapshots, incremental deltas, pagination, ETags, and 304 work', asyn
   assert.equal(pageOne.body.throughSequence, 2);
   assert.equal(pageOne.body.hasMore, false);
 
-  await storage.putListing(a.id, validateListingInput(listing({ expectedRevision: 1, description: 'Updated.' })), { cooldownMs: 0 });
-  await storage.deleteListing(b.id, 1, { cooldownMs: 0 });
+  await storage.putListing(validateListingInput(listing({ expectedRevision: 1, description: 'Updated.' })), { cooldownMs: 0 });
+  await storage.deleteListing(ENDPOINT_B, 1, { cooldownMs: 0 });
   const paged = await storage.getDelta(2, 1);
   assert.equal(paged.changes.length, 1);
   assert.equal(paged.hasMore, true);
@@ -204,10 +183,10 @@ test('cold snapshots, incremental deltas, pagination, ETags, and 304 work', asyn
 });
 
 test('old cursors receive resetRequired after retained history is pruned', async () => {
-  const { storage, a } = await setup();
-  await storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 0 });
-  await storage.putListing(a.id, validateListingInput(listing({ expectedRevision: 1, description: 'Updated.' })), { cooldownMs: 0 });
-  await storage.putListing(a.id, validateListingInput(listing({ expectedRevision: 2, description: 'Updated again.' })), { cooldownMs: 0 });
+  const { storage } = await setup();
+  await storage.putListing(validateListingInput(listing()), { cooldownMs: 0 });
+  await storage.putListing(validateListingInput(listing({ expectedRevision: 1, description: 'Updated.' })), { cooldownMs: 0 });
+  await storage.putListing(validateListingInput(listing({ expectedRevision: 2, description: 'Updated again.' })), { cooldownMs: 0 });
   storage.pruneThrough(2);
   const delta = await storage.getDelta(1, 250);
   assert.equal(delta.resetRequired, true);
@@ -215,34 +194,34 @@ test('old cursors receive resetRequired after retained history is pruned', async
   assert.equal((await storage.getDelta(999, 250)).resetRequired, true);
 });
 
-test('mutation cooldown is enforced per credential', async () => {
-  const { storage, a } = await setup();
+test('mutation cooldown is enforced per endpoint', async () => {
+  const { storage } = await setup();
   const now = new Date('2026-08-20T00:00:00Z');
-  await storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 60000, now });
+  await storage.putListing(validateListingInput(listing()), { cooldownMs: 60000, now });
   await assert.rejects(
-    storage.putListing(a.id, validateListingInput(listing({ expectedRevision: 1, description: 'Too soon.' })), { cooldownMs: 60000, now: new Date(now.getTime() + 1000) }),
+    storage.putListing(validateListingInput(listing({ expectedRevision: 1, description: 'Too soon.' })), { cooldownMs: 60000, now: new Date(now.getTime() + 1000) }),
     (error) => error.status === 429 && error.code === 'mutation_cooldown'
   );
 });
 
 test('listing and change event commit atomically in the test adapter', async () => {
-  const { storage, a } = await setup();
-  await assert.rejects(storage.putListing(a.id, validateListingInput(listing()), { cooldownMs: 0, failBeforeCommit: true }));
-  assert.equal(await storage.getListing(a.id), null);
+  const { storage } = await setup();
+  await assert.rejects(storage.putListing(validateListingInput(listing()), { cooldownMs: 0, failBeforeCommit: true }));
+  assert.equal(await storage.getListing(ENDPOINT_A), null);
   assert.equal(storage.changes.length, 0);
 });
 
-test('authenticated write handler enforces body limits and returns no-store results', async () => {
+test('anonymous write handler enforces body limits and returns no-store results', async () => {
   const { storage } = await setup();
   const handler = createListingHandler(storage);
   const tooLarge = response();
-  await handler(authorized('PUT', listing(), TOKEN_A), tooLarge);
+  await handler(listingRequest('PUT', listing()), tooLarge);
   assert.equal(tooLarge.statusCode, 201);
   assert.equal(tooLarge.headers['Cache-Control'], 'no-store');
 
   const oversized = response();
   await handler(request('PUT', {
-    headers: { authorization: `Bearer ${TOKEN_A}`, 'x-forwarded-proto': 'https', 'content-length': '9000' },
+    headers: { 'x-forwarded-proto': 'https', 'content-length': '9000' },
     body: listing()
   }), oversized);
   assert.equal(oversized.statusCode, 413);
@@ -254,8 +233,8 @@ test('tag catalog is versioned, cacheable, and supports 304', async () => {
   const first = response();
   await handler(request('GET'), first);
   assert.equal(first.body.schemaVersion, 1);
-  assert.equal(first.body.tagCatalogVersion, 3);
-  assert.equal(first.body.tags.length, 16);
+  assert.equal(first.body.tagCatalogVersion, 4);
+  assert.equal(first.body.tags.length, 17);
   assert.deepEqual(
     Object.fromEntries(first.body.tags.filter((tag) => ['creative', 'survival', 'alpha', 'classic'].includes(tag.id)).map((tag) => [tag.id, tag.color])),
     { survival: '#FF5555', creative: '#5555FF', alpha: '#55FF55', classic: '#FFAA00' }
@@ -263,6 +242,17 @@ test('tag catalog is versioned, cacheable, and supports 304', async () => {
   assert.deepEqual(
     Object.fromEntries(first.body.tags.filter((tag) => ['default', 'sky', 'flat', 'alpha', 'alpha_snow', 'infdev', 'classic'].includes(tag.id)).map((tag) => [tag.id, tag.label])),
     { default: 'Default', sky: 'Sky', flat: 'Superflat', alpha: 'Alpha', alpha_snow: 'Alpha (Snowy)', infdev: 'Infdev', classic: 'Classic' }
+  );
+  assert.deepEqual(
+    first.body.tags.find((tag) => tag.id === 'beta_1_7_3'),
+    {
+      id: 'beta_1_7_3',
+      label: 'Beta 1.7.3',
+      description: 'Vanilla Minecraft Beta 1.7.3 gameplay.',
+      color: '#AA5500',
+      sortOrder: 110,
+      active: true
+    }
   );
   const sourceCatalog = JSON.parse(readFileSync(new URL('../server-directory-tags-v1.json', import.meta.url), 'utf8'));
   assert.deepEqual(first.body, sourceCatalog);
